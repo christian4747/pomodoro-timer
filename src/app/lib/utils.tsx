@@ -4,7 +4,8 @@
  * @returns the {minutes:seconds} string that corresponds to the given amount of seconds
  */
 export const secondsToTimeString = (seconds: number) => {
-    return seconds / 60 < 10 ?
+    return seconds < 0 ? '00:00' :
+        seconds / 60 < 10 ?
         seconds % 60 < 10 ? `0${Math.floor(seconds / 60)}:0${seconds % 60}`
             : `0${Math.floor(seconds / 60)}:${seconds % 60}`
         :

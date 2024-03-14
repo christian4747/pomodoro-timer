@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./ui/header"
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto_mono = Roboto_Mono({ weight: ["500"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Pomodoro Timer",
@@ -16,17 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-        <body className={inter.className}>
-            <div className="min-h-screen">
-                <Header />
-
-                <div>
-                    {children}
-                </div>
-            </div>
-            
-        </body>
+    <html lang="en" className={roboto_mono.className}>
+        {children}
     </html>
   );
 }

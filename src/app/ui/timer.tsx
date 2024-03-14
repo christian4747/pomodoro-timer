@@ -3,39 +3,75 @@ import { IoMdSkipForward } from "react-icons/io";
 import { secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
 
-export default function Timer() {
+interface Props {
+    timeSeconds: number
+    setTimeSeconds: React.Dispatch<React.SetStateAction<number>>
+    intervalRef: React.MutableRefObject<undefined | NodeJS.Timeout>
+    timerType: string
+    setTimerType: React.Dispatch<React.SetStateAction<string>>
+    timerInfo: {pomodoro: number, shortbreak: number, longbreak: number}
+}
+
+export default function Timer(props: Props) {
 
     const [timerRunning, setTimerRunning] = useState(false);
-    const [timerType, setTimerType] = useState('pomodoro');
-    const [timeSeconds, setTimeSeconds] = useState(600);
-    const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
+    const [cycleCount, setCycleCount] = useState(1);
+    let worker = useRef<undefined | Worker>(undefined);
 
     useEffect(() => {
-        if (timeSeconds == 0) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = undefined;
+        worker.current = new Worker(new URL("../worker/worker.js", import.meta.url), { type: 'module' });
+
+        worker.current.onmessage = (e) => {
+            if (e.data[0] === 'currentSeconds') {
+                props.setTimeSeconds(e.data[1]);
+            }
+            
+        }
+    }, [])
+
+    useEffect(() => {
+        if (props.timeSeconds === props.timerInfo.pomodoro && props.timerType === 'pomodoro'
+        || props.timeSeconds === props.timerInfo.shortbreak && props.timerType === 'shortbreak'
+        || props.timeSeconds === props.timerInfo.longbreak && props.timerType === 'longbreak'
+        || props.timeSeconds > props.timerInfo.pomodoro && props.timerType === 'pomodoro'
+        || props.timeSeconds > props.timerInfo.shortbreak && props.timerType === 'shortbreak'
+        || props.timeSeconds > props.timerInfo.longbreak && props.timerType === 'longbreak') {
+            if (worker.current != undefined) {
+                worker.current.postMessage(['stoptimer']);
+            }
+
+            if (props.timerType != 'pomodoro') {
+                setCycleCount((cycleCount) => cycleCount + 1);
+            }
+            clearInterval(props.intervalRef.current);
+            props.intervalRef.current = undefined;
             setTimerRunning(false);
             configureTimer();
+            alert('timer finished');
         }
-    }, [timeSeconds]);
+    }, [props.timeSeconds]);
 
     const rotateType = (currentType : string) => {
-        if (currentType == 'pomodoro') {
+        if (currentType == 'pomodoro' && cycleCount == 4) {
+            return 'longbreak';
+        } else if (currentType == 'pomodoro') {
             return 'shortbreak';
         }
         return 'pomodoro';
     }
 
     const configureTimer = () => {
-        let next = rotateType(timerType);
+        let next = rotateType(props.timerType);
 
         if (next == 'pomodoro') {
-            setTimeSeconds(600);
+            props.setTimeSeconds(0);
         } else if (next == 'shortbreak') {
-            setTimeSeconds(300);
+            props.setTimeSeconds(0);
+        } else {
+            props.setTimeSeconds(0);
         }
 
-        setTimerType(next);
+        props.setTimerType(next);
     }
 
     const resetTimer = () => {
@@ -44,14 +80,21 @@ export default function Timer() {
 
     const toggleTimer = () => {
         setTimerRunning((timerRunning) => !timerRunning);
-        if (intervalRef.current != null) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = undefined;
+        if (worker.current != undefined) {
+            if (!timerRunning) {
+                worker.current.postMessage(['starttimer', props.timeSeconds]);
+            } else {
+                worker.current.postMessage(['stoptimer']);
+            }
         } else {
-            intervalRef.current = setInterval(() => {
-                setTimeSeconds((timeSeconds) => timeSeconds - 1);
-            }, 10);
-            console.log(typeof intervalRef.current)
+            if (props.intervalRef.current != null) {
+                clearInterval(props.intervalRef.current);
+                props.intervalRef.current = undefined;
+            } else {
+                props.intervalRef.current = setInterval(() => {
+                    props.setTimeSeconds(prevState => prevState + 1);
+                }, 1000);
+            }
         }
     }
 
@@ -67,8 +110,12 @@ export default function Timer() {
                 <button className="border border-black rounded p-2">Long Break</button>
             </div>
 
-            <div className="border border-black w-full h-full">
-                <p className="text-9xl p-5">{secondsToTimeString(timeSeconds)}</p>
+            <div className="border border-black w-full h-full text-9xl p-5 text-center">
+                {
+                    props.timerType === 'pomodoro' ? secondsToTimeString(props.timerInfo.pomodoro - props.timeSeconds)
+                    : props.timerType === 'shortbreak' ? secondsToTimeString(props.timerInfo.shortbreak - props.timeSeconds)
+                    : secondsToTimeString(props.timerInfo.longbreak - props.timeSeconds)
+                }
             </div>
 
             <div className="flex gap-5">
@@ -77,6 +124,10 @@ export default function Timer() {
                     {timerRunning ? 'Pause' : 'Start'}
                 </button>
                 <button onClick={skipTimer} className="text-4xl"><IoMdSkipForward /></button>
+            </div>
+
+            <div>
+                #{cycleCount}
             </div>
         </>
     );
