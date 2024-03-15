@@ -40,14 +40,12 @@ export default function Timer(props: Props) {
                 worker.current.postMessage(['stoptimer']);
             }
 
-            if (props.timerType != 'pomodoro') {
-                setCycleCount((cycleCount) => cycleCount + 1);
-            }
+            
             clearInterval(props.intervalRef.current);
             props.intervalRef.current = undefined;
             setTimerRunning(false);
             configureTimer();
-            alert('timer finished');
+            // alert('timer finished');
         }
     }, [props.timeSeconds]);
 
@@ -61,21 +59,22 @@ export default function Timer(props: Props) {
     }
 
     const configureTimer = () => {
-        let next = rotateType(props.timerType);
-
-        if (next == 'pomodoro') {
-            props.setTimeSeconds(0);
-        } else if (next == 'shortbreak') {
-            props.setTimeSeconds(0);
-        } else {
-            props.setTimeSeconds(0);
+        if (props.timerType != 'pomodoro') {
+            setCycleCount((cycleCount) => cycleCount + 1);
         }
-
+        let next = rotateType(props.timerType);
+        props.setTimeSeconds(0);
         props.setTimerType(next);
     }
 
     const resetTimer = () => {
-    
+        if (worker.current != undefined) {
+            worker.current.postMessage(['stoptimer']);
+        }
+        props.setTimeSeconds(0);
+        clearInterval(props.intervalRef.current);
+        props.intervalRef.current = undefined;
+        setTimerRunning(false);
     }
 
     const toggleTimer = () => {
@@ -99,7 +98,11 @@ export default function Timer(props: Props) {
     }
 
     const skipTimer = () => {
+        if (worker.current != undefined) {
+            worker.current.postMessage(['stoptimer']);
+        }
 
+        configureTimer();
     }
 
     return (
