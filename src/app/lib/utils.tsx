@@ -12,3 +12,7 @@ export const secondsToTimeString = (seconds: number) => {
         seconds % 60 < 10 ? `${Math.floor(seconds / 60)}:0${seconds % 60}`
             : `${Math.floor(seconds / 60)}:${seconds % 60}`;
 }
+
+export const clamp = (num: number, min: number, max: number) => {
+    return num > min ? num < max ? num : max : min;
+}

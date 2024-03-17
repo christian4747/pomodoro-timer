@@ -40,7 +40,6 @@ export default function Timer(props: Props) {
                 worker.current.postMessage(['stoptimer']);
             }
 
-            
             clearInterval(props.intervalRef.current);
             props.intervalRef.current = undefined;
             setTimerRunning(false);
@@ -59,12 +58,12 @@ export default function Timer(props: Props) {
     }
 
     const configureTimer = () => {
-        if (props.timerType != 'pomodoro') {
-            setCycleCount((cycleCount) => cycleCount + 1);
-        }
         let next = rotateType(props.timerType);
         props.setTimeSeconds(0);
         props.setTimerType(next);
+        if (next === 'pomodoro') {
+            setCycleCount((cycleCount) => cycleCount + 1);
+        }
     }
 
     const resetTimer = () => {
@@ -113,7 +112,7 @@ export default function Timer(props: Props) {
                 <button className="border border-black rounded p-2">Long Break</button>
             </div>
 
-            <div className="border border-black w-full h-full text-9xl p-5 text-center">
+            <div className="border border-black w-full h-full text-8xl p-5 text-center">
                 {
                     props.timerType === 'pomodoro' ? secondsToTimeString(props.timerInfo.pomodoro - props.timeSeconds)
                     : props.timerType === 'shortbreak' ? secondsToTimeString(props.timerInfo.shortbreak - props.timeSeconds)

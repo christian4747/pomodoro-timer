@@ -20,18 +20,6 @@ export default function Home() {
     const [timeSeconds, setTimeSeconds] = useState(0); 
     const [showSettings, setShowSettings] = useState(false);
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
-
-    useEffect(() => {
-        
-    }, []);
-
-    const handleClick = () => {
-        setTimerInfo({
-            pomodoro: 4000,
-            shortbreak: 600,
-            longbreak: 1800,
-        });
-    }
     
     return (
         <>
@@ -44,16 +32,13 @@ export default function Home() {
             </title>
             <body className={clsx(
                 {
-                    'bg-red-100 transition duration-1500': timerType === 'pomodoro',
-                    'bg-blue-100 transition duration-1500': timerType === 'shortbreak',
-                    'bg-purple-100 transition duration-1500': timerType === 'longbreak',
+                    'bg-red-200 transition duration-1500': timerType === 'pomodoro',
+                    'bg-blue-200 transition duration-1500': timerType === 'shortbreak',
+                    'bg-purple-200 transition duration-1500': timerType === 'longbreak',
                 }
                 )}>
 
-                {/* Testing Modal */}
-                <div>
-                    <SettingsModal showSettings={showSettings} setShowSettings={setShowSettings}/>
-                </div>
+                <SettingsModal showSettings={showSettings} setShowSettings={setShowSettings} timerInfo={timerInfo} setTimerInfo={setTimerInfo}/>
 
                 <Header setShowSettings={setShowSettings}/>
                 
@@ -75,7 +60,6 @@ export default function Home() {
                         {/* 2/2 */}
                         <div className="flex flex-col items-center justify-center border border-indigo-600">
                             <div className="text-3xl">Today's Tasks</div>
-                            <button onClick={handleClick}>123</button>
                             <ul>
                                 <li>Task1 - 🍅x2</li>
                                 <li>Task2 - 🍅x1</li>
