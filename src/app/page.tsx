@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Header from './ui/header';
 import { secondsToTimeString } from './lib/utils';
+import SettingsModal from './ui/settingsModal';
 
 export default function Home() {
 
@@ -17,6 +18,7 @@ export default function Home() {
 
     const [timerType, setTimerType] = useState('pomodoro');
     const [timeSeconds, setTimeSeconds] = useState(0); 
+    const [showSettings, setShowSettings] = useState(false);
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
     useEffect(() => {
@@ -47,7 +49,14 @@ export default function Home() {
                     'bg-purple-100 transition duration-1500': timerType === 'longbreak',
                 }
                 )}>
-                <Header />
+
+                {/* Testing Modal */}
+                <div>
+                    <SettingsModal showSettings={showSettings} setShowSettings={setShowSettings}/>
+                </div>
+
+                <Header setShowSettings={setShowSettings}/>
+                
                 <main className="flex justify-center p-5 w-full">
                     <div className="flex flex-col">
 
