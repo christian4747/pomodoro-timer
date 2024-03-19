@@ -16,10 +16,28 @@ export default function Home() {
         longbreak: 900,
     });
 
+    const [colorInfo, setColorInfo] = useState(
+    {
+        pomodoro: '#e66465',
+        shortbreak: '#e66465',
+        longbreak: '#e66465'
+    });
+
     const [timerType, setTimerType] = useState('pomodoro');
     const [timeSeconds, setTimeSeconds] = useState(0); 
     const [showSettings, setShowSettings] = useState(false);
+    const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
+
+    useEffect(() => {
+        if (timerType === 'pomodoro') {
+            setCurrentColor({ backgroundColor: colorInfo.pomodoro });
+        } else if (timerType === 'shortbreak') {
+            setCurrentColor({ backgroundColor: colorInfo.shortbreak });
+        } else {
+            setCurrentColor({ backgroundColor: colorInfo.longbreak });
+        }
+    }, [timerType, colorInfo]);
     
     return (
         <>
@@ -30,7 +48,7 @@ export default function Home() {
                     : `${timerType} - ` + secondsToTimeString(timerInfo.longbreak - timeSeconds)
                 }
             </title>
-            <body className={clsx(
+            <body style={currentColor} className={clsx(
                 {
                     'bg-red-200 transition duration-1500': timerType === 'pomodoro',
                     'bg-blue-200 transition duration-1500': timerType === 'shortbreak',
@@ -38,7 +56,14 @@ export default function Home() {
                 }
                 )}>
 
-                <SettingsModal showSettings={showSettings} setShowSettings={setShowSettings} timerInfo={timerInfo} setTimerInfo={setTimerInfo}/>
+                <SettingsModal
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
+                    timerInfo={timerInfo}
+                    setTimerInfo={setTimerInfo}
+                    colorInfo={colorInfo}
+                    setColorInfo={setColorInfo}
+                />
 
                 <Header setShowSettings={setShowSettings}/>
                 
@@ -54,6 +79,7 @@ export default function Home() {
                                 timerType={timerType}
                                 setTimerType={setTimerType}
                                 timerInfo={timerInfo}
+                                colorInfo={colorInfo}
                             />
                         </div>
 

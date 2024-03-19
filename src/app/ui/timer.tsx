@@ -10,6 +10,7 @@ interface Props {
     timerType: string
     setTimerType: React.Dispatch<React.SetStateAction<string>>
     timerInfo: {pomodoro: number, shortbreak: number, longbreak: number}
+    colorInfo: {pomodoro: string, shortbreak: string, longbreak: string}
 }
 
 export default function Timer(props: Props) {
