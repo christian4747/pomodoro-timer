@@ -61,9 +61,7 @@ export default function Timer(props: Props) {
         let next = rotateType(props.timerType);
         props.setTimeSeconds(0);
         props.setTimerType(next);
-        if (next === 'pomodoro') {
-            setCycleCount((cycleCount) => cycleCount + 1);
-        }
+        setCycleCount((cycleCount) => cycleCount + 1);
     }
 
     const resetTimer = () => {
@@ -104,12 +102,36 @@ export default function Timer(props: Props) {
         configureTimer();
     }
 
+    const swapToPomodoro = () => {
+        if (props.timerType === 'pomodoro') {
+            return;
+        }
+        resetTimer();
+        props.setTimerType('pomodoro');
+    }
+
+    const swapToShortBreak = () => {
+        if (props.timerType === 'shortbreak') {
+            return;
+        }
+        resetTimer();
+        props.setTimerType('shortbreak');
+    }
+
+    const swapToLongBreak = () => {
+        if (props.timerType === 'longbreak') {
+            return;
+        }
+        resetTimer();
+        props.setTimerType('longbreak');
+    }
+
     return (
         <>
             <div className="flex gap-1">
-                <button className="border border-black rounded p-2">Pomodoro</button>
-                <button className="border border-black rounded p-2">Short Break</button>
-                <button className="border border-black rounded p-2">Long Break</button>
+                <button className="border border-black rounded p-2" onClick={swapToPomodoro}>Pomodoro</button>
+                <button className="border border-black rounded p-2" onClick={swapToShortBreak}>Short Break</button>
+                <button className="border border-black rounded p-2" onClick={swapToLongBreak}>Long Break</button>
             </div>
 
             <div className="border border-black w-full h-full text-8xl p-5 text-center">
@@ -129,7 +151,7 @@ export default function Timer(props: Props) {
             </div>
 
             <div>
-                #{cycleCount}
+                #{cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount : cycleCount - 1 : cycleCount}
             </div>
         </>
     );
