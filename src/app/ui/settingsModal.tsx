@@ -8,6 +8,8 @@ interface Props {
     setTimerInfo: React.Dispatch<React.SetStateAction<{pomodoro: number; shortbreak: number; longbreak: number}>>
     colorInfo: {pomodoro: string, shortbreak: string, longbreak: string}
     setColorInfo: React.Dispatch<React.SetStateAction<{pomodoro: string; shortbreak: string; longbreak: string}>>
+    whiteText: boolean
+    setWhiteText: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const min = 0;
@@ -42,6 +44,10 @@ export default function SettingsModal(props: Props) {
         props.setColorInfo({ ...props.colorInfo, longbreak: e.target.value});
     }
 
+    const toggleWhiteText = () => {
+        props.setWhiteText(prevState => !prevState);
+    }
+
     return (
         // Modal container
         <div className={clsx(
@@ -51,11 +57,15 @@ export default function SettingsModal(props: Props) {
             }
         )}>
             {/* Modal content */}
-            <div className="fixed top-1/2 left-1/2 w-96 h-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5">
+            <div className={clsx(
+                {
+                    "fixed top-1/2 left-1/2 w-96 h-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5": !props.whiteText,
+                    "fixed top-1/2 left-1/2 w-96 h-96 bg-slate-500 -translate-x-1/2 -translate-y-1/2 p-5": props.whiteText,
+                }
+            )}>
                 <span className="float-right cursor-pointer" onClick={showHide}>&times;</span>
                 <div className="flex flex-col gap-2">
                     <div className="text-3xl">Settings</div>
-                    <hr/>
                     <div className="text-2xl">Timer Lengths</div>
                     <label>
                         Pomodoro: <input type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
@@ -66,7 +76,6 @@ export default function SettingsModal(props: Props) {
                     <label>
                         Long Break: <input type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
                     </label>
-                    <hr/>
                     <div className="text-2xl">Timer Colors</div>
                     <label>
                         Pomodoro: <input type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
@@ -76,6 +85,9 @@ export default function SettingsModal(props: Props) {
                     </label>
                     <label>
                         Long Break: <input type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
+                    </label>
+                    <label>
+                        White Text: <input type="checkbox" name="longbreak-color" defaultChecked={props.whiteText} onChange={toggleWhiteText}/>
                     </label>
                 </div>
                 <button className="absolute bottom-5 right-5 border border-indigo-600" onClick={showHide}>Save</button>

@@ -27,6 +27,7 @@ export default function Home() {
     const [timeSeconds, setTimeSeconds] = useState(0); 
     const [showSettings, setShowSettings] = useState(false);
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
+    const [whiteText, setWhiteText] = useState(false);
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
     useEffect(() => {
@@ -51,8 +52,11 @@ export default function Home() {
             <body style={currentColor} className={clsx(
                 {
                     'bg-red-200 transition duration-1500': timerType === 'pomodoro',
+                    'text-white bg-red-200 transition duration-1500': timerType === 'pomodoro' && whiteText,
                     'bg-blue-200 transition duration-1500': timerType === 'shortbreak',
+                    'text-white bg-blue-200 transition duration-1500': timerType === 'shortbreak' && whiteText,
                     'bg-purple-200 transition duration-1500': timerType === 'longbreak',
+                    'text-white bg-purple-200 transition duration-1500': timerType === 'longbreak' && whiteText,
                 }
                 )}>
 
@@ -63,6 +67,8 @@ export default function Home() {
                     setTimerInfo={setTimerInfo}
                     colorInfo={colorInfo}
                     setColorInfo={setColorInfo}
+                    whiteText={whiteText}
+                    setWhiteText={setWhiteText}
                 />
 
                 <Header setShowSettings={setShowSettings}/>
