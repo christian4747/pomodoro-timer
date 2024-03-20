@@ -18,9 +18,9 @@ export default function Home() {
 
     const [colorInfo, setColorInfo] = useState(
     {
-        pomodoro: '#e66465',
-        shortbreak: '#e66465',
-        longbreak: '#e66465'
+        pomodoro: '#FECACA',
+        shortbreak: '#BFDBFE',
+        longbreak: '#E9D5FF'
     });
 
     const [timerType, setTimerType] = useState('pomodoro');
