@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import Header from './ui/header';
 import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
+import Tasklist from './ui/tasklist';
 
 export default function Home() {
 
@@ -28,6 +29,9 @@ export default function Home() {
     const [showSettings, setShowSettings] = useState(false);
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
     const [whiteText, setWhiteText] = useState(false);
+    
+    const [tasks, setTasks] = useState(['Task1 - 🍅x2', 'Task2 - 🍅x1', 'Task3 - 🍅x3']);
+    
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
     useEffect(() => {
@@ -90,13 +94,11 @@ export default function Home() {
                         </div>
 
                         {/* 2/2 */}
-                        <div className="flex flex-col items-center justify-center border border-indigo-600">
-                            <div className="text-3xl">Today's Tasks</div>
-                            <ul>
-                                <li>Task1 - 🍅x2</li>
-                                <li>Task2 - 🍅x1</li>
-                                <li>Task3 - 🍅x3</li>
-                            </ul>
+                        <div>
+                            <Tasklist 
+                                tasks={tasks}
+                                setTasks={setTasks}
+                            />
                         </div>
                     </div>
                 </main>

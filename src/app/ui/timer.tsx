@@ -62,7 +62,9 @@ export default function Timer(props: Props) {
         let next = rotateType(props.timerType);
         props.setTimeSeconds(0);
         props.setTimerType(next);
-        setCycleCount((cycleCount) => cycleCount + 1);
+        if (props.timerType === 'pomodoro') {
+            setCycleCount((cycleCount) => cycleCount + 1);
+        }
     }
 
     const resetTimer = () => {

@@ -66,29 +66,49 @@ export default function SettingsModal(props: Props) {
                 <span className="float-right cursor-pointer" onClick={showHide}>&times;</span>
                 <div className="flex flex-col gap-2">
                     <div className="text-3xl">Settings</div>
+
                     <div className="text-2xl">Timer Lengths</div>
-                    <label>
-                        Pomodoro: <input type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
-                    </label>
-                    <label>
-                        Short Break: <input type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
-                    </label>
-                    <label>
-                        Long Break: <input type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
-                    </label>
-                    <div className="text-2xl">Timer Colors</div>
-                    <label>
-                        Pomodoro: <input type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
-                    </label>
-                    <label>
-                        Short Break: <input type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
-                    </label>
-                    <label>
-                        Long Break: <input type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
-                    </label>
-                    <label>
-                        White Text: <input type="checkbox" name="longbreak-color" defaultChecked={props.whiteText} onChange={toggleWhiteText}/>
-                    </label>
+                    <div>
+                        <label>
+                            Pomodoro: <input className="bg-slate-400 w-12" type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Short Break: <input className="bg-slate-400 w-12" type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Long Break: <input className="bg-slate-400 w-12" type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
+                        </label>
+                    </div>
+
+                    <div className="text-2xl">Color Options</div>
+                    <div>
+                        <label>
+                            Pomodoro: <input className="bg-slate-400 w-12" type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
+                        </label>
+                    </div>
+                    
+                    <div>
+                        <label>
+                            Short Break: <input className="bg-slate-400 w-12" type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            Long Break: <input className="bg-slate-400 w-12" type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
+                        </label>
+                    </div>
+                    
+                    <div>
+                        <label>
+                            White Text: <input type="checkbox" name="longbreak-color" defaultChecked={props.whiteText} onChange={toggleWhiteText}/>
+                        </label>
+                    </div>
+                    
                 </div>
                 <button className="absolute bottom-5 right-5 border border-indigo-600" onClick={showHide}>Save</button>
             </div>
