@@ -30,7 +30,8 @@ export default function Home() {
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
     const [whiteText, setWhiteText] = useState(false);
     
-    const [tasks, setTasks] = useState(['Task1 - 🍅x2', 'Task2 - 🍅x1', 'Task3 - 🍅x3']);
+    const [tasks, setTasks] = useState([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0}]);
+    const [selectedTask, setSelectedTask] = useState(0);
     
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
@@ -43,6 +44,28 @@ export default function Home() {
             setCurrentColor({ backgroundColor: colorInfo.longbreak });
         }
     }, [timerType, colorInfo]);
+
+    useEffect(() => {
+        if (selectedTask === 0) {
+            return;
+        }
+
+        let selectNext = false;
+        tasks.map((task) => {
+            if (task.id === selectedTask) {
+                if (task.pomoCount === task.pomoLimit) {
+                    selectNext = true;
+                }
+            } else if (selectNext) {
+                setSelectedTask(task.id);
+                selectNext = false;
+            }
+        });
+
+        if (selectNext) {
+            setSelectedTask(0);
+        }
+    }, [tasks]);
     
     return (
         <>
@@ -90,14 +113,20 @@ export default function Home() {
                                 setTimerType={setTimerType}
                                 timerInfo={timerInfo}
                                 colorInfo={colorInfo}
+                                tasks={tasks}
+                                setTasks={setTasks}
+                                selectedTask={selectedTask}
+                                setSelectedTask={setSelectedTask}
                             />
                         </div>
 
                         {/* 2/2 */}
-                        <div>
+                        <div className="w-[450px]">
                             <Tasklist 
                                 tasks={tasks}
                                 setTasks={setTasks}
+                                selectedTask={selectedTask}
+                                setSelectedTask={setSelectedTask}
                             />
                         </div>
                     </div>

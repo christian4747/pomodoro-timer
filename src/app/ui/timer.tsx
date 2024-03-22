@@ -11,6 +11,10 @@ interface Props {
     setTimerType: React.Dispatch<React.SetStateAction<string>>
     timerInfo: {pomodoro: number, shortbreak: number, longbreak: number}
     colorInfo: {pomodoro: string, shortbreak: string, longbreak: string}
+    tasks: Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number}>
+    setTasks: React.Dispatch<React.SetStateAction<Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number}>>>
+    selectedTask: number
+    setSelectedTask: React.Dispatch<React.SetStateAction<number>>
 }
 
 export default function Timer(props: Props) {
@@ -50,7 +54,7 @@ export default function Timer(props: Props) {
     }, [props.timeSeconds]);
 
     const rotateType = (currentType : string) => {
-        if (currentType == 'pomodoro' && cycleCount == 4) {
+        if (currentType == 'pomodoro' && cycleCount % 4 === 0) {
             return 'longbreak';
         } else if (currentType == 'pomodoro') {
             return 'shortbreak';
@@ -64,6 +68,19 @@ export default function Timer(props: Props) {
         props.setTimerType(next);
         if (props.timerType === 'pomodoro') {
             setCycleCount((cycleCount) => cycleCount + 1);
+            if (props.selectedTask !== 0) {
+                const newTasks = props.tasks.map((task) => {
+                    if (task.id === props.selectedTask) {
+                        return {
+                            ...task,
+                            pomoCount: task.pomoCount + 1
+                        };
+                    } else {
+                        return task;
+                    }
+                });
+                props.setTasks(newTasks);
+            }
         }
     }
 
@@ -101,7 +118,7 @@ export default function Timer(props: Props) {
         if (worker.current != undefined) {
             worker.current.postMessage(['stoptimer']);
         }
-
+        setTimerRunning(false);
         configureTimer();
     }
 
