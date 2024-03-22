@@ -9,16 +9,25 @@ interface Props {
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
 }
 
+/** The minimum amount of pomodoros that can be assigned to a task */
 const min = 1;
+/** The maximum amount of pomodoros that can be assigned to a task */
 const max = 999;
 
+/**
+ * A component that handles creating and showing added tasks.
+ */
 export default function Tasklist(props: Props) {
 
+    // State for keeping track of the description input for adding a new task
     const [newTask, setNewTask] = useState('');
+    // State for keeping track of the upper pomodoro limit for a task
     const [pomoLimit, setPomoLimit] = useState(1);
+    // State for keeping tracking of keys assigned to tasks (incremented on new tasks)
     const [idCount, setIdCount] = useState(1);
 
-    const listItems = props.tasks.map((task, index) =>
+    // Creates the task list for display
+    const listItems = props.tasks.map((task) =>
     {
         if (task.id !== 0) {
             return(
@@ -42,6 +51,9 @@ export default function Tasklist(props: Props) {
         }
     });
 
+    /**
+     * Adds a new task to the list of tasks and resets the input.
+     */
     const addTask = () => {
         setIdCount(prevState => prevState + 1);
         props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: newTask, pomoCount: 0, pomoLimit: pomoLimit}]);
@@ -49,14 +61,26 @@ export default function Tasklist(props: Props) {
         setPomoLimit(1);
     }
 
+    /**
+     * Changes the state of the text currently in the description input box.
+     * @param e event triggered by typing in the input box
+     */
     const changeNewTask = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewTask(prevState => e.target.value);
     }
 
+    /**
+     * Changes the state of the number currently in the limit input box.
+     * @param e event triggered by typing in the input box
+     */
     const changePomoLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPomoLimit(prevState => clamp(parseInt(e.target.value), min, max));
     }
 
+    /**
+     * Removes a task element by the given key.
+     * @param key the task to remove
+     */
     const removeElement = (key: number) => {
         const newTasks = props.tasks.filter((task) => {
             return key !== task.id;
@@ -64,6 +88,10 @@ export default function Tasklist(props: Props) {
         props.setTasks(newTasks);
     }
 
+    /**
+     * Selects a task element by the given key.
+     * @param key the task to select
+     */
     const selectElement = (key: number) => {
         if (props.selectedTask === key) {
             props.setSelectedTask(0);
@@ -84,7 +112,7 @@ export default function Tasklist(props: Props) {
                     <label>
                         <input className="w-12" type="number" value={pomoLimit} onChange={changePomoLimit}/>
                     </label>
-                    <button onClick={addTask}>Add a task...</button>
+                    <button onClick={addTask}>Add task</button>
                 </div>
             </ul>
         </div>

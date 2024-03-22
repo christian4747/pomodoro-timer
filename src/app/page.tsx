@@ -8,33 +8,47 @@ import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
 import Tasklist from './ui/tasklist';
 
+/**
+ * The home page for the pomodoro timer.
+ */
 export default function Home() {
 
+    // Timer states
+    // Default timer settings
     const [timerInfo, setTimerInfo] = useState(
     {
         pomodoro: 1500,
         shortbreak: 300,
         longbreak: 900,
     });
+    // State for keeping track of the current timer type, starts at pomodoro
+    const [timerType, setTimerType] = useState('pomodoro');
+    // State for how many seconds have passed, starts at 0
+    const [timeSeconds, setTimeSeconds] = useState(0); 
 
+    // Settings states
+    // Default color settings
     const [colorInfo, setColorInfo] = useState(
     {
         pomodoro: '#FECACA',
         shortbreak: '#BFDBFE',
         longbreak: '#E9D5FF'
     });
-
-    const [timerType, setTimerType] = useState('pomodoro');
-    const [timeSeconds, setTimeSeconds] = useState(0); 
+    // State for whether the settings tab is open, starts at false
     const [showSettings, setShowSettings] = useState(false);
+    // State for tracking the current color of the page's background, starts at default pomodoro
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
+    // State for tracking whether or not white text is enabled, starts at false
     const [whiteText, setWhiteText] = useState(false);
     
+    // Task states
     const [tasks, setTasks] = useState([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0}]);
     const [selectedTask, setSelectedTask] = useState(0);
     
+    // Reference for the interval used by the timer
     const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
+    // Effect to change the color whenever the timer type changes or the color is changed in the settings
     useEffect(() => {
         if (timerType === 'pomodoro') {
             setCurrentColor({ backgroundColor: colorInfo.pomodoro });
@@ -45,6 +59,8 @@ export default function Home() {
         }
     }, [timerType, colorInfo]);
 
+    // Automatically selects the next task when the current task is finished
+    // TODO: add enable/disable checkbox in settings
     useEffect(() => {
         if (selectedTask === 0) {
             return;
