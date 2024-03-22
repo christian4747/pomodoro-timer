@@ -7,6 +7,7 @@ import Header from './ui/header';
 import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
 import Tasklist from './ui/tasklist';
+import { ColorInformation, TaskList, TimerInformation, TimerType } from './lib/types';
 
 /**
  * The home page for the pomodoro timer.
@@ -15,20 +16,20 @@ export default function Home() {
 
     // Timer states
     // Default timer settings
-    const [timerInfo, setTimerInfo] = useState(
+    const [timerInfo, setTimerInfo] = useState<TimerInformation>(
     {
         pomodoro: 1500,
         shortbreak: 300,
         longbreak: 900,
     });
     // State for keeping track of the current timer type, starts at pomodoro
-    const [timerType, setTimerType] = useState('pomodoro');
+    const [timerType, setTimerType] = useState<TimerType>('pomodoro');
     // State for how many seconds have passed, starts at 0
     const [timeSeconds, setTimeSeconds] = useState(0); 
 
     // Settings states
     // Default color settings
-    const [colorInfo, setColorInfo] = useState(
+    const [colorInfo, setColorInfo] = useState<ColorInformation>(
     {
         pomodoro: '#FECACA',
         shortbreak: '#BFDBFE',
@@ -42,7 +43,7 @@ export default function Home() {
     const [whiteText, setWhiteText] = useState(false);
     
     // Task states
-    const [tasks, setTasks] = useState([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0}]);
+    const [tasks, setTasks] = useState<TaskList>([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0}]);
     const [selectedTask, setSelectedTask] = useState(0);
     
     // Reference for the interval used by the timer

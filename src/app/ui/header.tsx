@@ -5,8 +5,14 @@ interface Props {
     setShowSettings: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+/**
+ * The header used for the main page.
+ */
 export default function Header(props: Props) {
 
+    /**
+     * Toggles the visiblity of the settings modal.
+     */
     const showHide = () => {
         props.setShowSettings((prevState => !prevState));
     }

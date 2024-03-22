@@ -13,6 +13,13 @@ export const secondsToTimeString = (seconds: number) => {
             : `${Math.floor(seconds / 60)}:${seconds % 60}`;
 }
 
+/**
+ * Receives min if the given number is less than the min, or max if the given number is greater than the max.
+ * @param num the number to clamp
+ * @param min the minimum bound
+ * @param max the maximum bound
+ * @returns number between min and max
+ */
 export const clamp = (num: number, min: number, max: number) => {
     return num > min ? num < max ? num : max : min;
 }

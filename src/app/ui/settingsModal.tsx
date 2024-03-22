@@ -1,49 +1,86 @@
 import clsx from "clsx";
 import { clamp } from "../lib/utils";
+import { ColorInformation, TimerInformation } from "../lib/types";
 
 interface Props {
     showSettings: boolean
     setShowSettings: React.Dispatch<React.SetStateAction<boolean>>
-    timerInfo: {pomodoro: number, shortbreak: number, longbreak: number}
-    setTimerInfo: React.Dispatch<React.SetStateAction<{pomodoro: number; shortbreak: number; longbreak: number}>>
-    colorInfo: {pomodoro: string, shortbreak: string, longbreak: string}
-    setColorInfo: React.Dispatch<React.SetStateAction<{pomodoro: string; shortbreak: string; longbreak: string}>>
+    timerInfo: TimerInformation
+    setTimerInfo: React.Dispatch<React.SetStateAction<TimerInformation>>
+    colorInfo: ColorInformation
+    setColorInfo: React.Dispatch<React.SetStateAction<ColorInformation>>
     whiteText: boolean
     setWhiteText: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+/** The minimum amount of minutes that can be assigned to a timer's length */
 const min = 0;
+/** The maximum amount of minutes that can be assigned to a timer's length */
 const max = 999;
 
+/**
+ * The modal used to manage the settings for the page.
+ */
 export default function SettingsModal(props: Props) {
+
+    /**
+     * Toggles the visiblity of the settings modal.
+     */
     const showHide = () => {
         props.setShowSettings((prevState => !prevState));
     }
 
+    /**
+     * Changes the current value of the pomodoro timer's length.
+     * @param e event triggered by typing in the input box
+     */
     const changePomodoro = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setTimerInfo({ ...props.timerInfo, pomodoro: clamp(parseInt(e.target.value), min, max) * 60});
     }
 
+    /**
+     * Changes the current value of the short break timer's length.
+     * @param e event triggered by typing in the input box
+     */
     const changeShortBreak = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setTimerInfo({ ...props.timerInfo, shortbreak: clamp(parseInt(e.target.value), min, max) * 60});
     }
     
+    /**
+     * Changes the current value of the long break timer's length.
+     * @param e event triggered by typing in the input box
+     */
     const changeLongBreak = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setTimerInfo({ ...props.timerInfo, longbreak: clamp(parseInt(e.target.value), min, max) * 60});
     }
 
+    /**
+     * Changes the current value of the pomodoro timer's color.
+     * @param e event triggered by typing in the input box
+     */
     const changePomodoroColor = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setColorInfo({ ...props.colorInfo, pomodoro: e.target.value});
     }
 
+    /**
+     * Changes the current value of the short break timer's color.
+     * @param e event triggered by typing in the input box
+     */
     const changeShortBreakColor = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setColorInfo({ ...props.colorInfo, shortbreak: e.target.value});
     }
 
+    /**
+     * Changes the current value of the long break timer's color.
+     * @param e event triggered by typing in the input box
+     */
     const changeLongBreakColor = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setColorInfo({ ...props.colorInfo, longbreak: e.target.value});
     }
 
+    /**
+     * Toggles whether the page uses white text.
+     */
     const toggleWhiteText = () => {
         props.setWhiteText(prevState => !prevState);
     }

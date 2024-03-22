@@ -2,27 +2,35 @@ import { PiArrowClockwiseBold } from "react-icons/pi";
 import { IoMdSkipForward } from "react-icons/io";
 import { secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
+import { ColorInformation, TaskList, TimerInformation, TimerType } from "../lib/types";
 
 interface Props {
     timeSeconds: number
     setTimeSeconds: React.Dispatch<React.SetStateAction<number>>
     intervalRef: React.MutableRefObject<undefined | NodeJS.Timeout>
-    timerType: string
-    setTimerType: React.Dispatch<React.SetStateAction<string>>
-    timerInfo: {pomodoro: number, shortbreak: number, longbreak: number}
-    colorInfo: {pomodoro: string, shortbreak: string, longbreak: string}
-    tasks: Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number}>
-    setTasks: React.Dispatch<React.SetStateAction<Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number}>>>
+    timerType: TimerType
+    setTimerType: React.Dispatch<React.SetStateAction<TimerType>>
+    timerInfo: TimerInformation
+    colorInfo: ColorInformation
+    tasks: TaskList
+    setTasks: React.Dispatch<TaskList>
     selectedTask: number
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
 }
 
+/**
+ * The component that handles the page's timer.
+ */
 export default function Timer(props: Props) {
 
+    // State tracking whether or not the timer is running
     const [timerRunning, setTimerRunning] = useState(false);
+    // State tracking the number of cycles the timer has performed
     const [cycleCount, setCycleCount] = useState(1);
+    // Reference for the worker used for background timer ticking
     let worker = useRef<undefined | Worker>(undefined);
 
+    // Initializes the worker on page load
     useEffect(() => {
         worker.current = new Worker(new URL("../worker/worker.js", import.meta.url), { type: 'module' });
 
@@ -30,10 +38,11 @@ export default function Timer(props: Props) {
             if (e.data[0] === 'currentSeconds') {
                 props.setTimeSeconds(e.data[1]);
             }
-            
         }
     }, [])
 
+    // When the time elapsed changes, check whether the timer is finished and act accordingly
+    // TODO: simplify if statement in function
     useEffect(() => {
         if (props.timeSeconds === props.timerInfo.pomodoro && props.timerType === 'pomodoro'
         || props.timeSeconds === props.timerInfo.shortbreak && props.timerType === 'shortbreak'
@@ -53,7 +62,12 @@ export default function Timer(props: Props) {
         }
     }, [props.timeSeconds]);
 
-    const rotateType = (currentType : string) => {
+    /**
+     * Returns the next TimerType after the given type.
+     * @param currentType the current TimerType
+     * @returns the next TimerType
+     */
+    const rotateType = (currentType : TimerType) => {
         if (currentType == 'pomodoro' && cycleCount % 4 === 0) {
             return 'longbreak';
         } else if (currentType == 'pomodoro') {
@@ -62,12 +76,19 @@ export default function Timer(props: Props) {
         return 'pomodoro';
     }
 
+    /**
+     * Sets up the timer for the next cycle.
+     */
     const configureTimer = () => {
-        let next = rotateType(props.timerType);
+        // Get the next type, reset the timer, set to the next type
+        let next: TimerType = rotateType(props.timerType);
         props.setTimeSeconds(0);
         props.setTimerType(next);
+
+        // Increment the cycle count if a pomodoro has passed
         if (props.timerType === 'pomodoro') {
             setCycleCount((cycleCount) => cycleCount + 1);
+            // If there is a selected task, increment the progress for that task
             if (props.selectedTask !== 0) {
                 const newTasks = props.tasks.map((task) => {
                     if (task.id === props.selectedTask) {
@@ -84,6 +105,10 @@ export default function Timer(props: Props) {
         }
     }
 
+    /**
+     * Implements the reset button functionality.
+     * Stops the timer, interval, and resets elapsed seconds to 0.
+     */
     const resetTimer = () => {
         if (worker.current != undefined) {
             worker.current.postMessage(['stoptimer']);
@@ -94,6 +119,11 @@ export default function Timer(props: Props) {
         setTimerRunning(false);
     }
 
+    /**
+     * Implements the 'Start' / 'Pause' button functionality.
+     * Tells the worker to start or stop the timer.
+     * If the worker is undefined, runs an internal timer.
+     */
     const toggleTimer = () => {
         setTimerRunning((timerRunning) => !timerRunning);
         if (worker.current != undefined) {
@@ -114,6 +144,10 @@ export default function Timer(props: Props) {
         }
     }
 
+    /**
+     * Implements the skip button functionality.
+     * Tells the worker to stop the timer (if not undefined) and skips to the next TimerType.
+     */
     const skipTimer = () => {
         if (worker.current != undefined) {
             worker.current.postMessage(['stoptimer']);
@@ -122,28 +156,37 @@ export default function Timer(props: Props) {
         configureTimer();
     }
 
+    /**
+     * Implements the Pomodoro button.
+     * Swaps the current TimerType to pomodoro.
+     */
     const swapToPomodoro = () => {
-        if (props.timerType === 'pomodoro') {
-            return;
+        if (props.timerType !== 'pomodoro') {
+            resetTimer();
+            props.setTimerType('pomodoro');
         }
-        resetTimer();
-        props.setTimerType('pomodoro');
     }
 
+    /**
+     * Implements the Short Break button.
+     * Swaps the current TimerType to shortbreak.
+     */
     const swapToShortBreak = () => {
-        if (props.timerType === 'shortbreak') {
-            return;
+        if (props.timerType !== 'shortbreak') {
+            resetTimer();
+            props.setTimerType('shortbreak');
         }
-        resetTimer();
-        props.setTimerType('shortbreak');
     }
 
+    /**
+     * Implements the Long Break button.
+     * Swaps the current TimerType to longbreak.
+     */
     const swapToLongBreak = () => {
-        if (props.timerType === 'longbreak') {
-            return;
+        if (props.timerType !== 'longbreak') {
+            resetTimer();
+            props.setTimerType('longbreak');
         }
-        resetTimer();
-        props.setTimerType('longbreak');
     }
 
     return (
