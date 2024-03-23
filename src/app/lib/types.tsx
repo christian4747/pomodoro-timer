@@ -16,9 +16,9 @@ export type ColorInformation = {pomodoro: string, shortbreak: string, longbreak:
 /**
  * Contains a number for id, string for the Task's description, number for the current progress count, and a number for the upper limit of progress.
  */
-export type Task = {id: number, taskDesc: string, pomoCount: number, pomoLimit: number};
+export type Task = {id: number, taskDesc: string, pomoCount: number, pomoLimit: number, editing: boolean};
 
 /**
  * Contains an array of Tasks.
  */
-export type TaskList = Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number}>;
+export type TaskList = Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number, editing: boolean}>;

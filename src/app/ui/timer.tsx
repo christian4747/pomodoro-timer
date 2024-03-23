@@ -27,6 +27,8 @@ export default function Timer(props: Props) {
     const [timerRunning, setTimerRunning] = useState(false);
     // State tracking the number of cycles the timer has performed
     const [cycleCount, setCycleCount] = useState(1);
+    // State tracking the description of the current task
+    const [taskDesc, setTaskDesc] = useState('');
     // Reference for the worker used for background timer ticking
     let worker = useRef<undefined | Worker>(undefined);
 
@@ -58,9 +60,20 @@ export default function Timer(props: Props) {
             props.intervalRef.current = undefined;
             setTimerRunning(false);
             configureTimer();
-            // alert('timer finished');
+
+            // setTimeout(() => {
+            //     alert('timer finished');
+            // }, 100);
         }
     }, [props.timeSeconds]);
+
+    useEffect(() => {
+        props.tasks.map((task) => {
+            if (task.id === props.selectedTask) {
+                setTaskDesc(task.taskDesc);
+            }
+        });
+    }, [props.selectedTask, props.tasks])
 
     /**
      * Returns the next TimerType after the given type.
@@ -189,6 +202,13 @@ export default function Timer(props: Props) {
         }
     }
 
+    /**
+     * Sets the cycle count back to 1.
+     */
+    const resetCycleCount = () => {
+        setCycleCount(1);
+    }
+
     return (
         <>
             <div className="flex gap-1">
@@ -213,8 +233,11 @@ export default function Timer(props: Props) {
                 <button onClick={skipTimer} className="text-4xl"><IoMdSkipForward /></button>
             </div>
 
-            <div>
+            <div className="cursor-pointer" onClick={resetCycleCount}>
                 #{cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount : cycleCount - 1 : cycleCount}
+            </div>
+            <div>
+                {props.timerType === 'shortbreak' || props.timerType === 'longbreak' ? 'Time for a break.' : props.selectedTask === 0 ? 'Focus time!' : taskDesc === '' ? 'Focus time!' : taskDesc}
             </div>
         </>
     );
