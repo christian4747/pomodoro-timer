@@ -101,53 +101,53 @@ export default function SettingsModal(props: Props) {
                 }
             )}>
                 <span className="float-right cursor-pointer" onClick={showHide}>&times;</span>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 w-3/4">
                     <div className="text-3xl">Settings</div>
 
                     <div className="text-2xl">Timer Lengths</div>
                     <div>
-                        <label>
-                            Pomodoro: <input className="bg-slate-400 w-12" type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Pomodoro: <input className="bg-transparent border border-gray-400 w-12" type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
+                        </div>
                     </div>
                     <div>
-                        <label>
-                            Short Break: <input className="bg-slate-400 w-12" type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Short Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
+                        </div>
                     </div>
                     <div>
-                        <label>
-                            Long Break: <input className="bg-slate-400 w-12" type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Long Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
+                        </div>
                     </div>
 
                     <div className="text-2xl">Color Options</div>
                     <div>
-                        <label>
-                            Pomodoro: <input className="bg-slate-400 w-12" type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Pomodoro: <input className="bg-transparent w-12" type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
+                        </div>
                     </div>
                     
                     <div>
-                        <label>
-                            Short Break: <input className="bg-slate-400 w-12" type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Short Break: <input className="bg-transparent w-12" type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
+                        </div>
                     </div>
 
                     <div>
-                        <label>
-                            Long Break: <input className="bg-slate-400 w-12" type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
-                        </label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
+                            Long Break: <input className="bg-transparent w-12" type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
+                        </div>
                     </div>
                     
                     <div>
-                        <label>
+                        <div className="flex align-center gap-2 justify-between w-2/3">
                             White Text: <input type="checkbox" name="longbreak-color" defaultChecked={props.whiteText} onChange={toggleWhiteText}/>
-                        </label>
+                        </div>
                     </div>
                     
                 </div>
-                <button className="absolute bottom-5 right-5 border border-indigo-600" onClick={showHide}>Save</button>
+                <button className="absolute bottom-2 right-5" onClick={showHide}>Save</button>
             </div>
         </div>
     );

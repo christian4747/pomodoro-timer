@@ -60,7 +60,7 @@ export default function Tasklist(props: Props) {
                                 <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
                             </label>
                         </div>
-
+                        /
                         <div>
                             <label>
                                 <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
@@ -247,6 +247,7 @@ export default function Tasklist(props: Props) {
                     <label>
                         <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoCount} onChange={changePomoCount}/>
                     </label>
+                    /
                     <label>
                         <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoLimit} onChange={changePomoLimit}/>
                     </label>

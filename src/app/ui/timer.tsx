@@ -3,6 +3,7 @@ import { IoMdSkipForward } from "react-icons/io";
 import { secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
 import { ColorInformation, TaskList, TimerInformation, TimerType } from "../lib/types";
+import clsx from "clsx";
 
 interface Props {
     timeSeconds: number
@@ -68,15 +69,16 @@ export default function Timer(props: Props) {
     }, [props.timeSeconds]);
 
     useEffect(() => {
-        props.tasks.map((task) => {
-            if (task.id === props.selectedTask) {
-                if (task.pomoCount === task.pomoLimit) {
-                    setTaskDesc('');
-                } else {
+        if (props.selectedTask === 0) {
+            setTaskDesc('');
+        } else {
+            props.tasks.map((task) => {
+                if (task.id === props.selectedTask) {
                     setTaskDesc(task.taskDesc);
                 }
-            }
-        });
+            });
+        }
+        
     }, [props.selectedTask, props.tasks])
 
     /**
@@ -216,9 +218,35 @@ export default function Timer(props: Props) {
     return (
         <>
             <div className="flex gap-1">
-                <button className="border-b-4 border-black rounded p-2" onClick={swapToPomodoro}>Pomodoro</button>
-                <button className="border-b-4 border-black rounded p-2" onClick={swapToShortBreak}>Short Break</button>
-                <button className="border-b-4 border-black rounded p-2" onClick={swapToLongBreak}>Long Break</button>
+                <button 
+                    className={clsx(
+                    {
+                        "border-b-4 border-black rounded p-2" : props.timerType === 'pomodoro',
+                        "rounded p-2" : props.timerType !== 'pomodoro'
+                    })}
+                    onClick={swapToPomodoro}
+                >
+                    Pomodoro
+                </button>
+                <button
+                    className={clsx(
+                    {
+                        "border-b-4 border-black rounded p-2" : props.timerType === 'shortbreak',
+                        "rounded p-2" : props.timerType !== 'shortbreak'
+                    })} onClick={swapToShortBreak}
+                >
+                    Short Break
+                </button>
+                <button 
+                    className={clsx(
+                    {
+                        "border-b-4 border-black rounded p-2" : props.timerType === 'longbreak',
+                        "rounded p-2" : props.timerType !== 'longbreak'
+                    })} 
+                    onClick={swapToLongBreak}
+                >
+                    Long Break
+                </button>
             </div>
 
             <div className="w-full h-full text-8xl p-5 text-center">
