@@ -70,7 +70,11 @@ export default function Timer(props: Props) {
     useEffect(() => {
         props.tasks.map((task) => {
             if (task.id === props.selectedTask) {
-                setTaskDesc(task.taskDesc);
+                if (task.pomoCount === task.pomoLimit) {
+                    setTaskDesc('');
+                } else {
+                    setTaskDesc(task.taskDesc);
+                }
             }
         });
     }, [props.selectedTask, props.tasks])
@@ -212,12 +216,12 @@ export default function Timer(props: Props) {
     return (
         <>
             <div className="flex gap-1">
-                <button className="border border-black rounded p-2" onClick={swapToPomodoro}>Pomodoro</button>
-                <button className="border border-black rounded p-2" onClick={swapToShortBreak}>Short Break</button>
-                <button className="border border-black rounded p-2" onClick={swapToLongBreak}>Long Break</button>
+                <button className="border-b-4 border-black rounded p-2" onClick={swapToPomodoro}>Pomodoro</button>
+                <button className="border-b-4 border-black rounded p-2" onClick={swapToShortBreak}>Short Break</button>
+                <button className="border-b-4 border-black rounded p-2" onClick={swapToLongBreak}>Long Break</button>
             </div>
 
-            <div className="border border-black w-full h-full text-8xl p-5 text-center">
+            <div className="w-full h-full text-8xl p-5 text-center">
                 {
                     props.timerType === 'pomodoro' ? secondsToTimeString(props.timerInfo.pomodoro - props.timeSeconds)
                     : props.timerType === 'shortbreak' ? secondsToTimeString(props.timerInfo.shortbreak - props.timeSeconds)
@@ -226,18 +230,18 @@ export default function Timer(props: Props) {
             </div>
 
             <div className="flex gap-5">
-                <button onClick={resetTimer} className="text-4xl"><PiArrowClockwiseBold /></button>
-                <button onClick={toggleTimer} className="border border-black rounded text-4xl p-3">
+                <button onClick={resetTimer} className="border-b-4 border-black text-4xl"><PiArrowClockwiseBold /></button>
+                <button onClick={toggleTimer} className="border-b-4 border-black rounded text-4xl p-3">
                     {timerRunning ? 'Pause' : 'Start'}
                 </button>
-                <button onClick={skipTimer} className="text-4xl"><IoMdSkipForward /></button>
+                <button onClick={skipTimer} className="border-b-4 border-black text-4xl"><IoMdSkipForward /></button>
             </div>
 
             <div className="cursor-pointer" onClick={resetCycleCount}>
-                #{cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount : cycleCount - 1 : cycleCount}
+                {cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount + 'x🍅' : cycleCount - 1 + 'x🍅' : cycleCount + 'x🍅'}
             </div>
-            <div>
-                {props.timerType === 'shortbreak' || props.timerType === 'longbreak' ? 'Time for a break.' : props.selectedTask === 0 ? 'Focus time!' : taskDesc === '' ? 'Focus time!' : taskDesc}
+            <div className="truncate w-3/4 h-1/4 text-center">
+                {props.timerType === 'shortbreak' || props.timerType === 'longbreak' ? 'Time to relax!' : props.selectedTask === 0 ? 'Work time!' : taskDesc === '' ? 'Work time!' : taskDesc}
             </div>
         </>
     );

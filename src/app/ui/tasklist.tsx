@@ -41,13 +41,13 @@ export default function Tasklist(props: Props) {
         if (task.id !== 0) {
             if (task.editing) {
                 return(
-                    <li className="flex gap-2 items-center justify-between border border-black p-3" key={task.id}>
+                    <li className="flex gap-2 items-center justify-between border-b-2 border-black p-3" key={task.id}>
                         <div>
                             <label>
                                 <input type="text" value={task.taskDesc} onChange={(e) => editTaskDescription(e, task.id)} className={clsx(
                                     {
-                                        'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-3/4': task.pomoCount !== task.pomoLimit,
-                                        'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-3/4': task.pomoCount >= task.pomoLimit
+                                        'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
+                                        'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
                                     }
                                     )}
                                 />
@@ -57,16 +57,16 @@ export default function Tasklist(props: Props) {
                         
                         <div>
                             <label>
-                                <input className="w-12" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
+                                <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
                             </label>
                         </div>
 
                         <div>
                             <label>
-                                <input className="w-12" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
+                                <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
                             </label>
                         </div>
-                        <div className="flex w-10 justify-between">
+                        <div className="flex w-11 justify-between">
                             <button onClick={() => editElement(task.id)}><FaSave /></button>
                             <button onClick={() => removeElement(task.id)}><IoIosRemove /></button>
                         </div>
@@ -74,11 +74,11 @@ export default function Tasklist(props: Props) {
                 )
             } else {
                 return(
-                    <li className="flex gap-2 items-center justify-between border border-black p-3" key={task.id}>
+                    <li className="flex gap-2 items-center justify-between border-b-2 border-black p-3" key={task.id}>
                         <div className={clsx(
                         {
-                            'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-2/3': task.pomoCount !== task.pomoLimit,
-                            'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-2/3': task.pomoCount >= task.pomoLimit
+                            'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-2/3 bg-transparent border-b-2 border-transparent': task.pomoCount !== task.pomoLimit,
+                            'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-2/3 bg-transparent border-b-2 border-transparent': task.pomoCount >= task.pomoLimit
                         }
                         )}
                         >
@@ -101,10 +101,12 @@ export default function Tasklist(props: Props) {
      * Adds a new task to the list of tasks and resets the input.
      */
     const addTask = () => {
-        setIdCount(prevState => prevState + 1);
-        props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: newTask, pomoCount: 0, pomoLimit: pomoLimit, editing: false}]);
-        setNewTask('');
-        setPomoLimit(1);
+        if (newTask.trim().length !== 0) {
+            setIdCount(prevState => prevState + 1);
+            props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: newTask, pomoCount: 0, pomoLimit: pomoLimit, editing: false}]);
+            setNewTask('');
+            setPomoLimit(1);
+        }
     }
 
     /**
@@ -218,10 +220,14 @@ export default function Tasklist(props: Props) {
     const editElement = (key: number) => {
         const newTasks = props.tasks.map((task) => {
             if (task.id === key) {
-                return {
-                    ...task,
-                    editing: !task.editing
-                };
+                if (task.taskDesc.trim().length === 0) {
+                    return task;
+                } else {
+                    return {
+                        ...task,
+                        editing: !task.editing
+                    };
+                }
             } else {
                 return task;
             }
@@ -230,21 +236,21 @@ export default function Tasklist(props: Props) {
     }
 
     return (
-        <div className="flex flex-col border border-indigo-600">
-            <div className="text-3xl text-center">Today's Tasks</div>
+        <div className="flex flex-col">
+            <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today's Tasks</div>
             <ul className="flex flex-col p-5 gap-2 overflow-scroll overflow-x-hidden">
                 {listItems}
-                <div className="flex gap-2 items-center justify-between border border-black p-3">
+                <div className="flex gap-2 items-center justify-between border-b-2 border-black p-3">
                     <label>
-                        <input className="w-3/4" type="text" value={newTask} onChange={changeNewTask} placeholder="Task description"/>
+                        <input className="w-full bg-transparent border-b-2 border-black" type="text" value={newTask} onChange={changeNewTask} placeholder="Task description"/>
                     </label>
                     <label>
-                        <input className="w-12" type="number" value={pomoCount} onChange={changePomoCount}/>
+                        <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoCount} onChange={changePomoCount}/>
                     </label>
                     <label>
-                        <input className="w-12" type="number" value={pomoLimit} onChange={changePomoLimit}/>
+                        <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoLimit} onChange={changePomoLimit}/>
                     </label>
-                    <button className="w-10" onClick={addTask}>Add</button>
+                    <button className="w-11" onClick={addTask}>Add</button>
                 </div>
             </ul>
         </div>

@@ -121,7 +121,7 @@ export default function Home() {
                     <div className="flex flex-col">
 
                         {/* 1/2 */}
-                        <div className="w-[450px] flex flex-col items-center justify-center border border-indigo-600 gap-2 p-2">
+                        <div className="w-[450px] flex flex-col items-center justify-center gap-2 p-2">
                             <Timer
                                 timeSeconds={timeSeconds}
                                 setTimeSeconds={setTimeSeconds}    
