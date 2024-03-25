@@ -41,55 +41,62 @@ export default function Tasklist(props: Props) {
         if (task.id !== 0) {
             if (task.editing) {
                 return(
-                    <li className="flex gap-2 items-center justify-between border-b-2 border-black p-3" key={task.id}>
-                        <div>
-                            <label>
-                                <input type="text" value={task.taskDesc} onChange={(e) => editTaskDescription(e, task.id)} className={clsx(
-                                    {
-                                        'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
-                                        'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
-                                    }
-                                    )}
-                                />
-                            </label>
+                    <li className="flex gap-2 border-b-2 border-black p-3" key={task.id}>
+                        <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
+                        <div className="flex gap-2 items-center justify-between">
+                            <div>
+                                <label>
+                                    <input type="text" value={task.taskDesc} onChange={(e) => editTaskDescription(e, task.id)} className={clsx(
+                                        {
+                                            'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
+                                            'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
+                                        }
+                                        )}
+                                    />
+                                </label>
+                                
+                            </div>
                             
+                            <div>
+                                <label>
+                                    <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
+                                </label>
+                            </div>
+                            /
+                            <div>
+                                <label>
+                                    <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
+                                </label>
+                            </div>
+                            <div className="flex w-11 justify-between">
+                                <button onClick={() => editElement(task.id)}><FaSave /></button>
+                                <button onClick={() => removeElement(task.id)}><IoIosRemove /></button>
+                            </div>
                         </div>
                         
-                        <div>
-                            <label>
-                                <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
-                            </label>
-                        </div>
-                        /
-                        <div>
-                            <label>
-                                <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
-                            </label>
-                        </div>
-                        <div className="flex w-11 justify-between">
-                            <button onClick={() => editElement(task.id)}><FaSave /></button>
-                            <button onClick={() => removeElement(task.id)}><IoIosRemove /></button>
-                        </div>
                     </li>
                 )
             } else {
                 return(
-                    <li className="flex gap-2 items-center justify-between border-b-2 border-black p-3" key={task.id}>
-                        <div className={clsx(
-                        {
-                            'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-2/3 bg-transparent border-b-2 border-transparent': task.pomoCount !== task.pomoLimit,
-                            'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-2/3 bg-transparent border-b-2 border-transparent': task.pomoCount >= task.pomoLimit
-                        }
-                        )}
-                        >
-                            {task.taskDesc}
+                    <li className="flex gap-2 border-b-2 border-black p-3" key={task.id}>
+                        <div className="flex gap-2 items-center justify-between w-full">
+                            <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
+                            <div className={clsx(
+                            {
+                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount !== task.pomoLimit,
+                                'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount >= task.pomoLimit
+                            }
+                            )}
+                            >
+                                {task.taskDesc}
+                            </div>
+                            <div>
+                                {task.pomoCount}/{task.pomoLimit}
+                            </div>
+                            <button onClick={() => editElement(task.id)}><MdEdit /></button>
+                            <button onClick={() => removeElement(task.id)}><IoIosRemove /></button>
                         </div>
-                        <div>
-                            {task.pomoCount}/{task.pomoLimit}
-                        </div>
-                        <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
-                        <button onClick={() => editElement(task.id)}><MdEdit /></button>
-                        <button onClick={() => removeElement(task.id)}><IoIosRemove /></button>
+                        
                     </li>
                 )
             }
@@ -101,12 +108,10 @@ export default function Tasklist(props: Props) {
      * Adds a new task to the list of tasks and resets the input.
      */
     const addTask = () => {
-        if (newTask.trim().length !== 0) {
-            setIdCount(prevState => prevState + 1);
-            props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: newTask, pomoCount: 0, pomoLimit: pomoLimit, editing: false}]);
-            setNewTask('');
-            setPomoLimit(1);
-        }
+        setIdCount(prevState => prevState + 1);
+        props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: '', pomoCount: 0, pomoLimit: 1, editing: true}]);
+        setNewTask('');
+        setPomoLimit(1);
     }
 
     /**
@@ -240,18 +245,8 @@ export default function Tasklist(props: Props) {
             <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today's Tasks</div>
             <ul className="flex flex-col p-5 gap-2 overflow-scroll overflow-x-hidden">
                 {listItems}
-                <div className="flex gap-2 items-center justify-between border-b-2 border-black p-3">
-                    <label>
-                        <input className="w-full bg-transparent border-b-2 border-black" type="text" value={newTask} onChange={changeNewTask} placeholder="Task description"/>
-                    </label>
-                    <label>
-                        <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoCount} onChange={changePomoCount}/>
-                    </label>
-                    /
-                    <label>
-                        <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={pomoLimit} onChange={changePomoLimit}/>
-                    </label>
-                    <button className="w-11" onClick={addTask}>Add</button>
+                <div className="flex gap-2 items-center justify-center border-b-2 border-black p-3">
+                    <button onClick={addTask}>New Task</button>
                 </div>
             </ul>
         </div>
