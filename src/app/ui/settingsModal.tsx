@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { clamp } from "../lib/utils";
 import { ColorInformation, TimerInformation } from "../lib/types";
+import { useEffect, useRef } from "react";
 
 interface Props {
     showSettings: boolean
@@ -22,6 +23,71 @@ const max = 999;
  * The modal used to manage the settings for the page.
  */
 export default function SettingsModal(props: Props) {
+
+    const isFirstExecution = useRef([true, true, true]);
+
+    useEffect(() => {
+        const storedTimerInfo = localStorage.getItem('timerPreference');
+        if (storedTimerInfo) {
+            console.log(storedTimerInfo)
+            props.setTimerInfo(JSON.parse(storedTimerInfo));
+        }
+        
+        const storedWhiteTextPref = localStorage.getItem('whiteTextPreference');
+        if (storedWhiteTextPref) {
+            console.log(storedWhiteTextPref)
+            props.setWhiteText(JSON.parse(storedWhiteTextPref));
+        }
+
+        const storedColorInfo = localStorage.getItem('colorPreference');
+        if (storedColorInfo) {
+            console.log(storedColorInfo)
+            props.setColorInfo(JSON.parse(storedColorInfo));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isFirstExecution.current[0]) {
+            isFirstExecution.current[0] = false;
+            return;
+        }
+
+        localStorage.setItem('timerPreference', JSON.stringify(props.timerInfo));
+    }, [props.timerInfo]);
+
+    useEffect(() => {
+        if (isFirstExecution.current[1]) {
+            isFirstExecution.current[1] = false;
+            return;
+        }
+
+        localStorage.setItem('whiteTextPreference', JSON.stringify(props.whiteText));
+    }, [props.whiteText]);
+
+    useEffect(() => {
+        if (isFirstExecution.current[2]) {
+            isFirstExecution.current[2] = false;
+            return;
+        }
+
+        localStorage.setItem('colorPreference', JSON.stringify(props.colorInfo));
+    }, [props.colorInfo]);
+
+    const resetSettings = () => {
+        props.setTimerInfo({
+            pomodoro: 1500,
+            shortbreak: 300,
+            longbreak: 900,
+        });
+
+        props.setWhiteText(false);
+        
+        props.setColorInfo({
+            pomodoro: '#FECACA',
+            shortbreak: '#BFDBFE',
+            longbreak: '#E9D5FF'
+        });
+    }
 
     /**
      * Toggles the visiblity of the settings modal.
@@ -142,12 +208,12 @@ export default function SettingsModal(props: Props) {
                     
                     <div>
                         <div className="flex align-center gap-2 justify-between w-2/3">
-                            White Text: <input type="checkbox" name="longbreak-color" defaultChecked={props.whiteText} onChange={toggleWhiteText}/>
+                            White Text: <input type="checkbox" name="longbreak-color" checked={props.whiteText} onChange={toggleWhiteText}/>
                         </div>
                     </div>
                     
                 </div>
-                <button className="absolute bottom-2 right-5" onClick={showHide}>Save</button>
+                <button className="absolute bottom-2 right-5" onClick={resetSettings}>Reset to Default</button>
             </div>
         </div>
     );
