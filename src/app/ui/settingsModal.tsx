@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { clamp } from "../lib/utils";
-import { ColorInformation, TimerInformation } from "../lib/types";
+import { CheckboxSettingsInfo, ColorInformation, TimerInformation } from "../lib/types";
 import { useEffect, useRef } from "react";
 
 interface Props {
@@ -10,8 +10,8 @@ interface Props {
     setTimerInfo: React.Dispatch<React.SetStateAction<TimerInformation>>
     colorInfo: ColorInformation
     setColorInfo: React.Dispatch<React.SetStateAction<ColorInformation>>
-    whiteText: boolean
-    setWhiteText: React.Dispatch<React.SetStateAction<boolean>>
+    checkboxSettings: CheckboxSettingsInfo
+    setCheckboxSettings: React.Dispatch<React.SetStateAction<CheckboxSettingsInfo>>
 }
 
 /** The minimum amount of minutes that can be assigned to a timer's length */
@@ -29,19 +29,16 @@ export default function SettingsModal(props: Props) {
     useEffect(() => {
         const storedTimerInfo = localStorage.getItem('timerPreference');
         if (storedTimerInfo) {
-            console.log(storedTimerInfo)
             props.setTimerInfo(JSON.parse(storedTimerInfo));
         }
         
-        const storedWhiteTextPref = localStorage.getItem('whiteTextPreference');
-        if (storedWhiteTextPref) {
-            console.log(storedWhiteTextPref)
-            props.setWhiteText(JSON.parse(storedWhiteTextPref));
+        const storedCheckboxSettingsInfo = localStorage.getItem('checkboxSettingsPreference');
+        if (storedCheckboxSettingsInfo) {
+            props.setCheckboxSettings(JSON.parse(storedCheckboxSettingsInfo));
         }
 
         const storedColorInfo = localStorage.getItem('colorPreference');
         if (storedColorInfo) {
-            console.log(storedColorInfo)
             props.setColorInfo(JSON.parse(storedColorInfo));
         }
     }, []);
@@ -61,8 +58,8 @@ export default function SettingsModal(props: Props) {
             return;
         }
 
-        localStorage.setItem('whiteTextPreference', JSON.stringify(props.whiteText));
-    }, [props.whiteText]);
+        localStorage.setItem('checkboxSettingsPreference', JSON.stringify(props.checkboxSettings));
+    }, [props.checkboxSettings]);
 
     useEffect(() => {
         if (isFirstExecution.current[2]) {
@@ -74,18 +71,28 @@ export default function SettingsModal(props: Props) {
     }, [props.colorInfo]);
 
     const resetSettings = () => {
+        if (!confirm('Reset settings to default?')) {
+            return;
+        }
+
+        localStorage.clear();
+
         props.setTimerInfo({
             pomodoro: 1500,
             shortbreak: 300,
             longbreak: 900,
         });
 
-        props.setWhiteText(false);
+        props.setCheckboxSettings({
+            whiteText: false,
+            autoSelectNext: false,
+            autoDeselectFinished: false,
+        });
         
         props.setColorInfo({
-            pomodoro: '#FECACA',
-            shortbreak: '#BFDBFE',
-            longbreak: '#E9D5FF'
+            pomodoro: '#D291BC',
+            shortbreak: '#E0BBE4',
+            longbreak: '#FEC8D8'
         });
     }
 
@@ -148,72 +155,101 @@ export default function SettingsModal(props: Props) {
      * Toggles whether the page uses white text.
      */
     const toggleWhiteText = () => {
-        props.setWhiteText(prevState => !prevState);
+        props.setCheckboxSettings({...props.checkboxSettings, whiteText: !props.checkboxSettings.whiteText});
+    }
+
+    const toggleAutoSelectNext = () => {
+        props.setCheckboxSettings({...props.checkboxSettings, autoSelectNext: !props.checkboxSettings.autoSelectNext});
+    }
+
+    const toggleAutoDeselectFinished = () => {
+        props.setCheckboxSettings({...props.checkboxSettings, autoDeselectFinished: !props.checkboxSettings.autoDeselectFinished});
     }
 
     return (
         // Modal container
         <div className={clsx(
             {
-                "fixed z-1 bg-black/40 w-full h-full": props.showSettings,
-                "hidden fixed z-1 bg-black/40 w-full h-full": !props.showSettings
+                "": props.showSettings,
+                "hidden": !props.showSettings
             }
         )}>
+
+            <div onClick={showHide} className="fixed z-1 bg-black/40 w-full h-full"></div>
             {/* Modal content */}
             <div className={clsx(
                 {
-                    "fixed top-1/2 left-1/2 w-96 h-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5": !props.whiteText,
-                    "fixed top-1/2 left-1/2 w-96 h-96 bg-slate-500 -translate-x-1/2 -translate-y-1/2 p-5": props.whiteText,
+                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto": !props.checkboxSettings.whiteText,
+                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-500 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto": props.checkboxSettings.whiteText,
                 }
             )}>
-                <span className="float-right cursor-pointer" onClick={showHide}>&times;</span>
-                <div className="flex flex-col gap-2 w-3/4">
-                    <div className="text-3xl">Settings</div>
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex align-center justify-between">
+                        <div className="text-3xl">Settings</div>
+                        <div className="cursor-pointer" onClick={showHide}>&times;</div>
+                    </div>
 
                     <div className="text-2xl">Timer Lengths</div>
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Pomodoro: <input className="bg-transparent border border-gray-400 w-12" type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
                         </div>
                     </div>
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Short Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
                         </div>
                     </div>
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Long Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
                         </div>
                     </div>
 
                     <div className="text-2xl">Color Options</div>
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Pomodoro: <input className="bg-transparent w-12" type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
                         </div>
                     </div>
                     
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Short Break: <input className="bg-transparent w-12" type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
                         </div>
                     </div>
 
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
+                        <div className="flex align-center gap-2 justify-between w-full">
                             Long Break: <input className="bg-transparent w-12" type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
                         </div>
                     </div>
-                    
+
+                    <div className="text-2xl">Other Options</div>                    
                     <div>
-                        <div className="flex align-center gap-2 justify-between w-2/3">
-                            White Text: <input type="checkbox" name="longbreak-color" checked={props.whiteText} onChange={toggleWhiteText}/>
+                        <div className="flex align-center gap-2 justify-between w-full">
+                            White Text: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.whiteText} onChange={toggleWhiteText}/>
                         </div>
+                    </div>
+
+                    <div>
+                        <div className="flex align-center gap-2 justify-between w-full">
+                            Auto-Select Next Task: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.autoSelectNext} onChange={toggleAutoSelectNext}/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="flex align-center gap-2 justify-between w-full">
+                            Auto-Deselect Finished Tasks: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.autoDeselectFinished} onChange={toggleAutoDeselectFinished}/>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <button className="text-xl" onClick={resetSettings}>Reset to Default</button>
                     </div>
                     
                 </div>
-                <button className="absolute bottom-2 right-5" onClick={resetSettings}>Reset to Default</button>
+                
             </div>
         </div>
     );

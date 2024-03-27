@@ -212,6 +212,9 @@ export default function Timer(props: Props) {
      * Sets the cycle count back to 1.
      */
     const resetCycleCount = () => {
+        if (!confirm("Reset number of tomatoes?")) {
+            return;
+        }
         setCycleCount(1);
     }
 

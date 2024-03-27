@@ -7,7 +7,7 @@ import Header from './ui/header';
 import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
 import Tasklist from './ui/tasklist';
-import { ColorInformation, TaskList, TimerInformation, TimerType } from './lib/types';
+import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType } from './lib/types';
 
 /**
  * The home page for the pomodoro timer.
@@ -31,16 +31,22 @@ export default function Home() {
     // Default color settings
     const [colorInfo, setColorInfo] = useState<ColorInformation>(
     {
-        pomodoro: '#FECACA',
-        shortbreak: '#BFDBFE',
-        longbreak: '#E9D5FF'
+        pomodoro: '#D291BC',
+        shortbreak: '#E0BBE4',
+        longbreak: '#FEC8D8'
     });
     // State for whether the settings tab is open, starts at false
     const [showSettings, setShowSettings] = useState(false);
     // State for tracking the current color of the page's background, starts at default pomodoro
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
     // State for tracking whether or not white text is enabled, starts at false
-    const [whiteText, setWhiteText] = useState(false);
+    // const [whiteText, setWhiteText] = useState(false);
+
+    const [checkboxSettings, setCheckboxSettings] = useState<CheckboxSettingsInfo>({
+        whiteText: false,
+        autoSelectNext: false,
+        autoDeselectFinished: false
+    });
     
     // Task states
     const [tasks, setTasks] = useState<TaskList>([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0, editing: false}]);
@@ -61,27 +67,39 @@ export default function Home() {
     }, [timerType, colorInfo]);
 
     // Automatically selects the next task when the current task is finished
-    // TODO: add enable/disable checkbox in settings
     useEffect(() => {
         if (selectedTask === 0) {
             return;
         }
 
-        let selectNext = false;
-        tasks.map((task) => {
-            if (task.id === selectedTask) {
-                if (task.pomoCount === task.pomoLimit) {
-                    selectNext = true;
+        let finishedCurrent = false;
+        if (checkboxSettings.autoSelectNext) {
+            tasks.map((task) => {
+                if (task.id === selectedTask) {
+                    if (task.pomoCount >= task.pomoLimit) {
+                        finishedCurrent = true;
+                    }
+                } else if (finishedCurrent) {
+                    setSelectedTask(task.id);
+                    finishedCurrent = false;
                 }
-            } else if (selectNext) {
-                setSelectedTask(task.id);
-                selectNext = false;
-            }
-        });
+            });
 
-        if (selectNext) {
-            setSelectedTask(0);
+            if (finishedCurrent && checkboxSettings.autoDeselectFinished) {
+                setSelectedTask(0);
+            }
         }
+
+        if (checkboxSettings.autoDeselectFinished && !checkboxSettings.autoSelectNext) {
+            tasks.map((task) => {
+                if (task.id === selectedTask) {
+                    if (task.pomoCount >= task.pomoLimit) {
+                        setSelectedTask(0);
+                    }
+                }
+            });
+        }
+
     }, [tasks]);
     
     return (
@@ -96,11 +114,11 @@ export default function Home() {
             <body style={currentColor} className={clsx(
                 {
                     'bg-red-200 transition duration-1000': timerType === 'pomodoro',
-                    'text-white bg-red-200 transition duration-1000': timerType === 'pomodoro' && whiteText,
+                    'text-white bg-red-200 transition duration-1000': timerType === 'pomodoro' && checkboxSettings.whiteText,
                     'bg-blue-200 transition duration-1000': timerType === 'shortbreak',
-                    'text-white bg-blue-200 transition duration-1000': timerType === 'shortbreak' && whiteText,
+                    'text-white bg-blue-200 transition duration-1000': timerType === 'shortbreak' && checkboxSettings.whiteText,
                     'bg-purple-200 transition duration-1000': timerType === 'longbreak',
-                    'text-white bg-purple-200 transition duration-1000': timerType === 'longbreak' && whiteText,
+                    'text-white bg-purple-200 transition duration-1000': timerType === 'longbreak' && checkboxSettings.whiteText,
                 }
                 )}>
 
@@ -111,8 +129,8 @@ export default function Home() {
                     setTimerInfo={setTimerInfo}
                     colorInfo={colorInfo}
                     setColorInfo={setColorInfo}
-                    whiteText={whiteText}
-                    setWhiteText={setWhiteText}
+                    checkboxSettings={checkboxSettings}
+                    setCheckboxSettings={setCheckboxSettings}
                 />
 
                 <Header setShowSettings={setShowSettings}/>

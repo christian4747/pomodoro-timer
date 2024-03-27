@@ -22,3 +22,9 @@ export type Task = {id: number, taskDesc: string, pomoCount: number, pomoLimit: 
  * Contains an array of Tasks.
  */
 export type TaskList = Array<{id: number, taskDesc: string, pomoCount: number, pomoLimit: number, editing: boolean}>;
+
+/**
+ * Holds three booleans: enabled/disabled white text, enabled/disabled auto-selecting the next task when finished, enabled/disabled auto-deselect when 
+ * reaching a task's limit.
+ */
+export type CheckboxSettingsInfo = {whiteText: boolean, autoSelectNext: boolean, autoDeselectFinished: boolean};

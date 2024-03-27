@@ -245,8 +245,8 @@ export default function Tasklist(props: Props) {
             <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today's Tasks</div>
             <ul className="flex flex-col p-5 gap-2 overflow-scroll overflow-x-hidden">
                 {listItems}
-                <div className="flex gap-2 items-center justify-center border-b-2 border-black p-3">
-                    <button onClick={addTask}>New Task</button>
+                <div onClick={addTask} className="flex gap-2 items-center justify-center border-2 border-black rounded-lg border-dashed p-3 cursor-pointer">
+                    <button>+ New Task</button>
                 </div>
             </ul>
         </div>
