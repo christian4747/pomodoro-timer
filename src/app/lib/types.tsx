@@ -28,3 +28,8 @@ export type TaskList = Array<{id: number, taskDesc: string, pomoCount: number, p
  * reaching a task's limit.
  */
 export type CheckboxSettingsInfo = {whiteText: boolean, autoSelectNext: boolean, autoDeselectFinished: boolean};
+
+/**
+ * Holds one value: a number for how loud the alarm sound should be.
+ */
+export type VolumeSettingsInfo = {alarmSound: number};

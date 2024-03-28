@@ -7,7 +7,7 @@ import Header from './ui/header';
 import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
 import Tasklist from './ui/tasklist';
-import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType } from './lib/types';
+import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from './lib/types';
 
 /**
  * The home page for the pomodoro timer.
@@ -47,6 +47,33 @@ export default function Home() {
         autoSelectNext: false,
         autoDeselectFinished: false
     });
+
+    const [volumeSettings, setVolumeSettings] = useState<VolumeSettingsInfo>({
+        alarmSound: 20
+    });
+
+    let ring = useRef<undefined | HTMLAudioElement>(undefined);
+    useEffect(() => {
+        ring.current = new Audio("../../../AlarmClockSound.wav");
+        if (ring.current !== undefined) {
+            ring.current.volume = volumeSettings.alarmSound / 100;
+        }
+    }, []);
+
+    const ringAlarm = () => {
+        if (ring.current !== undefined) {
+            if (!ring.current.paused) {
+                ring.current.currentTime = 0;
+            }
+            ring.current.play();
+        }
+    }
+
+    useEffect(() => {
+        if (ring.current !== undefined) {
+            ring.current.volume = volumeSettings.alarmSound / 100;
+        }
+    }, [volumeSettings]);
     
     // Task states
     const [tasks, setTasks] = useState<TaskList>([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0, editing: false}]);
@@ -131,6 +158,9 @@ export default function Home() {
                     setColorInfo={setColorInfo}
                     checkboxSettings={checkboxSettings}
                     setCheckboxSettings={setCheckboxSettings}
+                    volumeSettings={volumeSettings}
+                    setVolumeSettings={setVolumeSettings}
+                    ringAlarm={ringAlarm}
                 />
 
                 <Header setShowSettings={setShowSettings}/>
@@ -152,6 +182,8 @@ export default function Home() {
                                 setTasks={setTasks}
                                 selectedTask={selectedTask}
                                 setSelectedTask={setSelectedTask}
+                                volumeSettings={volumeSettings}
+                                ringAlarm={ringAlarm}
                             />
                         </div>
 

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { clamp } from "../lib/utils";
-import { CheckboxSettingsInfo, ColorInformation, TimerInformation } from "../lib/types";
+import { CheckboxSettingsInfo, ColorInformation, TimerInformation, VolumeSettingsInfo } from "../lib/types";
 import { useEffect, useRef } from "react";
 
 interface Props {
@@ -12,19 +12,25 @@ interface Props {
     setColorInfo: React.Dispatch<React.SetStateAction<ColorInformation>>
     checkboxSettings: CheckboxSettingsInfo
     setCheckboxSettings: React.Dispatch<React.SetStateAction<CheckboxSettingsInfo>>
+    volumeSettings: VolumeSettingsInfo
+    setVolumeSettings: React.Dispatch<React.SetStateAction<VolumeSettingsInfo>>
+    ringAlarm: React.MouseEventHandler<HTMLButtonElement>
 }
 
 /** The minimum amount of minutes that can be assigned to a timer's length */
-const min = 0;
+const timerMin = 0;
 /** The maximum amount of minutes that can be assigned to a timer's length */
-const max = 999;
+const timerMax = 999;
+
+const volumeMin = 0;
+const volumeMax = 100;
 
 /**
  * The modal used to manage the settings for the page.
  */
 export default function SettingsModal(props: Props) {
 
-    const isFirstExecution = useRef([true, true, true]);
+    const isFirstExecution = useRef([true, true, true, true]);
 
     useEffect(() => {
         const storedTimerInfo = localStorage.getItem('timerPreference');
@@ -40,6 +46,11 @@ export default function SettingsModal(props: Props) {
         const storedColorInfo = localStorage.getItem('colorPreference');
         if (storedColorInfo) {
             props.setColorInfo(JSON.parse(storedColorInfo));
+        }
+
+        const storedVolumeInfo = localStorage.getItem('volumePreference');
+        if (storedVolumeInfo) {
+            props.setVolumeSettings(JSON.parse(storedVolumeInfo));
         }
     }, []);
 
@@ -70,6 +81,15 @@ export default function SettingsModal(props: Props) {
         localStorage.setItem('colorPreference', JSON.stringify(props.colorInfo));
     }, [props.colorInfo]);
 
+    useEffect(() => {
+        if (isFirstExecution.current[3]) {
+            isFirstExecution.current[3] = false;
+            return;
+        }
+
+        localStorage.setItem('volumePreference', JSON.stringify(props.volumeSettings));
+    }, [props.volumeSettings]);
+
     const resetSettings = () => {
         if (!confirm('Reset settings to default?')) {
             return;
@@ -92,7 +112,11 @@ export default function SettingsModal(props: Props) {
         props.setColorInfo({
             pomodoro: '#D291BC',
             shortbreak: '#E0BBE4',
-            longbreak: '#FEC8D8'
+            longbreak: '#FEC8D8',
+        });
+
+        props.setVolumeSettings({
+            alarmSound: 20,
         });
     }
 
@@ -108,7 +132,7 @@ export default function SettingsModal(props: Props) {
      * @param e event triggered by typing in the input box
      */
     const changePomodoro = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.setTimerInfo({ ...props.timerInfo, pomodoro: clamp(parseInt(e.target.value), min, max) * 60});
+        props.setTimerInfo({ ...props.timerInfo, pomodoro: clamp(parseInt(e.target.value), timerMin, timerMax) * 60});
     }
 
     /**
@@ -116,7 +140,7 @@ export default function SettingsModal(props: Props) {
      * @param e event triggered by typing in the input box
      */
     const changeShortBreak = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.setTimerInfo({ ...props.timerInfo, shortbreak: clamp(parseInt(e.target.value), min, max) * 60});
+        props.setTimerInfo({ ...props.timerInfo, shortbreak: clamp(parseInt(e.target.value), timerMin, timerMax) * 60});
     }
     
     /**
@@ -124,7 +148,7 @@ export default function SettingsModal(props: Props) {
      * @param e event triggered by typing in the input box
      */
     const changeLongBreak = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.setTimerInfo({ ...props.timerInfo, longbreak: clamp(parseInt(e.target.value), min, max) * 60});
+        props.setTimerInfo({ ...props.timerInfo, longbreak: clamp(parseInt(e.target.value), timerMin, timerMax) * 60});
     }
 
     /**
@@ -149,6 +173,10 @@ export default function SettingsModal(props: Props) {
      */
     const changeLongBreakColor = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setColorInfo({ ...props.colorInfo, longbreak: e.target.value});
+    }
+
+    const changeVolumeAlarm = (e: React.ChangeEvent<HTMLInputElement>) => {
+        props.setVolumeSettings({...props.volumeSettings, alarmSound: clamp(parseInt(e.target.value), volumeMin, volumeMax)})
     }
 
     /**
@@ -179,14 +207,25 @@ export default function SettingsModal(props: Props) {
             {/* Modal content */}
             <div className={clsx(
                 {
-                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto": !props.checkboxSettings.whiteText,
-                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-500 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto": props.checkboxSettings.whiteText,
+                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-200 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto rounded": !props.checkboxSettings.whiteText,
+                    "z-2 fixed top-1/2 left-1/2 w-96 bg-slate-500 -translate-x-1/2 -translate-y-1/2 p-5 overflow-auto rounded": props.checkboxSettings.whiteText,
                 }
             )}>
                 <div className="flex flex-col gap-2 w-full">
                     <div className="flex align-center justify-between">
                         <div className="text-3xl">Settings</div>
                         <div className="cursor-pointer" onClick={showHide}>&times;</div>
+                    </div>
+
+                    <div className="text-2xl">Audio Options</div>
+                    <div className="flex align-center gap-2 justify-between w-full">
+                        Alarm Sound: <input className="bg-transparent border border-gray-400 w-1/4" type="range" min="0" max="100" name="alarm-volume" value={props.volumeSettings.alarmSound} onChange={changeVolumeAlarm}/>
+                        <div className="flex align-center gap-2 justify-center items-center w-1/4">
+                            <div>
+                                <input className="bg-transparent border border-gray-400 w-12" type="number" name="alarm-volume-box" value={props.volumeSettings.alarmSound} onChange={changeVolumeAlarm}/>
+                            </div>
+                            <button onClick={props.ringAlarm}>Test</button>
+                        </div>
                     </div>
 
                     <div className="text-2xl">Timer Lengths</div>

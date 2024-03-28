@@ -2,7 +2,7 @@ import { PiArrowClockwiseBold } from "react-icons/pi";
 import { IoMdSkipForward } from "react-icons/io";
 import { secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
-import { ColorInformation, TaskList, TimerInformation, TimerType } from "../lib/types";
+import { ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from "../lib/types";
 import clsx from "clsx";
 
 interface Props {
@@ -17,6 +17,8 @@ interface Props {
     setTasks: React.Dispatch<TaskList>
     selectedTask: number
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
+    volumeSettings: VolumeSettingsInfo
+    ringAlarm: Function
 }
 
 /**
@@ -42,7 +44,7 @@ export default function Timer(props: Props) {
                 props.setTimeSeconds(e.data[1]);
             }
         }
-    }, [])
+    }, []);
 
     // When the time elapsed changes, check whether the timer is finished and act accordingly
     // TODO: simplify if statement in function
@@ -56,6 +58,8 @@ export default function Timer(props: Props) {
             if (worker.current != undefined) {
                 worker.current.postMessage(['stoptimer']);
             }
+
+            props.ringAlarm();
 
             clearInterval(props.intervalRef.current);
             props.intervalRef.current = undefined;
