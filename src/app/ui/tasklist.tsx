@@ -14,9 +14,9 @@ interface Props {
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
 }
 
-/** The minimum amount of pomodoros that can be assigned to a task */
+/** The lower limit of the task's current count */
 const countMin = 0;
-/** The minimum amount of pomodoros that can be assigned to a task */
+/** The lower limit of the task's goal count */
 const limitMin = 1;
 /** The maximum amount of pomodoros that can be assigned to a task */
 const max = 999;
@@ -46,11 +46,15 @@ export default function Tasklist(props: Props) {
                         <div className="flex gap-2 items-center justify-between">
                             <div>
                                 <label>
-                                    <input type="text" value={task.taskDesc} onChange={(e) => editTaskDescription(e, task.id)} className={clsx(
-                                        {
-                                            'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
-                                            'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
-                                        }
+                                    <input
+                                        type="text"
+                                        value={task.taskDesc}
+                                        onChange={(e) => editTaskDescription(e, task.id)}
+                                        className={clsx(
+                                            {
+                                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
+                                                'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
+                                            }
                                         )}
                                     />
                                 </label>
@@ -59,13 +63,23 @@ export default function Tasklist(props: Props) {
                             
                             <div>
                                 <label>
-                                    <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoCount} onChange={(e) => editCurrentPomoCount(e, task.id)} />
+                                    <input
+                                        className="w-12 bg-transparent border-b-2 border-black"
+                                        type="number"
+                                        value={task.pomoCount}
+                                        onChange={(e) => editCurrentPomoCount(e, task.id)}
+                                    />
                                 </label>
                             </div>
                             /
                             <div>
                                 <label>
-                                    <input className="w-12 bg-transparent border-b-2 border-black" type="number" value={task.pomoLimit} onChange={(e) => editPomoLimit(e, task.id)} />
+                                    <input
+                                        className="w-12 bg-transparent border-b-2 border-black"
+                                        type="number"
+                                        value={task.pomoLimit}
+                                        onChange={(e) => editPomoLimit(e, task.id)}
+                                    />
                                 </label>
                             </div>
                             <div className="flex w-11 justify-between">
@@ -82,10 +96,10 @@ export default function Tasklist(props: Props) {
                         <div className="flex gap-2 items-center justify-between w-full">
                             <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
                             <div className={clsx(
-                            {
-                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount !== task.pomoLimit,
-                                'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount >= task.pomoLimit
-                            }
+                                {
+                                    'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount !== task.pomoLimit,
+                                    'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-transparent': task.pomoCount >= task.pomoLimit
+                                }
                             )}
                             >
                                 {task.taskDesc}

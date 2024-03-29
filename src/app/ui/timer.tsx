@@ -65,13 +65,10 @@ export default function Timer(props: Props) {
             props.intervalRef.current = undefined;
             setTimerRunning(false);
             configureTimer();
-
-            // setTimeout(() => {
-            //     alert('timer finished');
-            // }, 100);
         }
     }, [props.timeSeconds]);
 
+    // Handles changing the current task name under the number of cycles.
     useEffect(() => {
         if (props.selectedTask === 0) {
             setTaskDesc('');
@@ -276,7 +273,12 @@ export default function Timer(props: Props) {
                 {cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount + 'x🍅' : cycleCount - 1 + 'x🍅' : cycleCount + 'x🍅'}
             </div>
             <div className="truncate w-3/4 h-1/4 text-center">
-                {props.timerType === 'shortbreak' || props.timerType === 'longbreak' ? 'Time to relax!' : props.selectedTask === 0 ? 'Work time!' : taskDesc === '' ? 'Work time!' : taskDesc}
+                {
+                    props.timerType === 'shortbreak' || props.timerType === 'longbreak' ?'Time to relax!'
+                    : props.selectedTask === 0 ? 'Work time!'
+                    : taskDesc === '' ? 'Work time!'
+                    : taskDesc
+                }
             </div>
         </>
     );

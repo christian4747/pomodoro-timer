@@ -22,7 +22,9 @@ const timerMin = 0;
 /** The maximum amount of minutes that can be assigned to a timer's length */
 const timerMax = 999;
 
+/** The minimum volume that can be assigned */
 const volumeMin = 0;
+/** The maximum volume that can be assigned */
 const volumeMax = 100;
 
 /**
@@ -30,8 +32,10 @@ const volumeMax = 100;
  */
 export default function SettingsModal(props: Props) {
 
+    // Stores a reference for a boolean to prevent useEffect running on site load
     const isFirstExecution = useRef([true, true, true, true]);
 
+    // Set the settings based on saved preferences
     useEffect(() => {
         const storedTimerInfo = localStorage.getItem('timerPreference');
         if (storedTimerInfo) {
@@ -54,6 +58,7 @@ export default function SettingsModal(props: Props) {
         }
     }, []);
 
+    // Save the timer's length preference on change
     useEffect(() => {
         if (isFirstExecution.current[0]) {
             isFirstExecution.current[0] = false;
@@ -63,6 +68,7 @@ export default function SettingsModal(props: Props) {
         localStorage.setItem('timerPreference', JSON.stringify(props.timerInfo));
     }, [props.timerInfo]);
 
+    // Save the checkbox settings preference on change
     useEffect(() => {
         if (isFirstExecution.current[1]) {
             isFirstExecution.current[1] = false;
@@ -72,6 +78,7 @@ export default function SettingsModal(props: Props) {
         localStorage.setItem('checkboxSettingsPreference', JSON.stringify(props.checkboxSettings));
     }, [props.checkboxSettings]);
 
+    // Save the timer's color preference on change
     useEffect(() => {
         if (isFirstExecution.current[2]) {
             isFirstExecution.current[2] = false;
@@ -81,6 +88,7 @@ export default function SettingsModal(props: Props) {
         localStorage.setItem('colorPreference', JSON.stringify(props.colorInfo));
     }, [props.colorInfo]);
 
+    // Save the alarm's volume preference on change
     useEffect(() => {
         if (isFirstExecution.current[3]) {
             isFirstExecution.current[3] = false;
@@ -90,6 +98,9 @@ export default function SettingsModal(props: Props) {
         localStorage.setItem('volumePreference', JSON.stringify(props.volumeSettings));
     }, [props.volumeSettings]);
 
+    /**
+     * Resets the settings to default.
+     */
     const resetSettings = () => {
         if (!confirm('Reset settings to default?')) {
             return;
@@ -175,6 +186,10 @@ export default function SettingsModal(props: Props) {
         props.setColorInfo({ ...props.colorInfo, longbreak: e.target.value});
     }
 
+    /**
+     * Changes the current value of the alarm's volume.
+     * @param e event triggered by typing in the input box
+     */
     const changeVolumeAlarm = (e: React.ChangeEvent<HTMLInputElement>) => {
         props.setVolumeSettings({...props.volumeSettings, alarmSound: clamp(parseInt(e.target.value), volumeMin, volumeMax)})
     }
@@ -186,10 +201,16 @@ export default function SettingsModal(props: Props) {
         props.setCheckboxSettings({...props.checkboxSettings, whiteText: !props.checkboxSettings.whiteText});
     }
 
+    /**
+     * Toggles whether the next task on the list will be automatically selected once the previous one is completed.
+     */
     const toggleAutoSelectNext = () => {
         props.setCheckboxSettings({...props.checkboxSettings, autoSelectNext: !props.checkboxSettings.autoSelectNext});
     }
 
+    /**
+     * Toggles whether the current task will be deselected when completed.
+     */
     const toggleAutoDeselectFinished = () => {
         props.setCheckboxSettings({...props.checkboxSettings, autoDeselectFinished: !props.checkboxSettings.autoDeselectFinished});
     }
@@ -219,10 +240,25 @@ export default function SettingsModal(props: Props) {
 
                     <div className="text-2xl">Audio Options</div>
                     <div className="flex align-center gap-2 justify-between w-full">
-                        Alarm Sound: <input className="bg-transparent border border-gray-400 w-1/4" type="range" min="0" max="100" name="alarm-volume" value={props.volumeSettings.alarmSound} onChange={changeVolumeAlarm}/>
+                        Alarm Sound:
+                        <input
+                            className="bg-transparent border border-gray-400 w-1/4"
+                            type="range"
+                            min="0"
+                            max="100"
+                            name="alarm-volume"
+                            value={props.volumeSettings.alarmSound}
+                            onChange={changeVolumeAlarm}
+                        />
                         <div className="flex align-center gap-2 justify-center items-center w-1/4">
                             <div>
-                                <input className="bg-transparent border border-gray-400 w-12" type="number" name="alarm-volume-box" value={props.volumeSettings.alarmSound} onChange={changeVolumeAlarm}/>
+                                <input
+                                    className="bg-transparent border border-gray-400 w-12"
+                                    type="number"
+                                    name="alarm-volume-box"
+                                    value={props.volumeSettings.alarmSound}
+                                    onChange={changeVolumeAlarm}
+                                />
                             </div>
                             <button onClick={props.ringAlarm}>Test</button>
                         </div>
@@ -231,55 +267,114 @@ export default function SettingsModal(props: Props) {
                     <div className="text-2xl">Timer Lengths</div>
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Pomodoro: <input className="bg-transparent border border-gray-400 w-12" type="number" name="pomodoro-length" value={props.timerInfo.pomodoro / 60} onChange={changePomodoro}/>
+                            Pomodoro:
+                            <input
+                                className="bg-transparent border border-gray-400 w-12"
+                                type="number" name="pomodoro-length"
+                                value={props.timerInfo.pomodoro / 60}
+                                onChange={changePomodoro}
+                            />
                         </div>
                     </div>
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Short Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="shortbreak-length" value={props.timerInfo.shortbreak / 60} onChange={changeShortBreak}/>
+                            Short Break:
+                            <input
+                                className="bg-transparent border border-gray-400 w-12"
+                                type="number"
+                                name="shortbreak-length"
+                                value={props.timerInfo.shortbreak / 60}
+                                onChange={changeShortBreak}
+                            />
                         </div>
                     </div>
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Long Break: <input className="bg-transparent border border-gray-400 w-12" type="number" name="longbreak-length" value={props.timerInfo.longbreak / 60} onChange={changeLongBreak}/>
+                            Long Break:
+                            <input
+                                className="bg-transparent border border-gray-400 w-12"
+                                type="number"
+                                name="longbreak-length"
+                                value={props.timerInfo.longbreak / 60}
+                                onChange={changeLongBreak}
+                            />
                         </div>
                     </div>
 
                     <div className="text-2xl">Color Options</div>
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Pomodoro: <input className="bg-transparent w-12" type="color" name="pomodoro-color" value={props.colorInfo.pomodoro} onChange={changePomodoroColor}/>
+                            Pomodoro:
+                            <input
+                                className="bg-transparent w-12"
+                                type="color"
+                                name="pomodoro-color"
+                                value={props.colorInfo.pomodoro}
+                                onChange={changePomodoroColor}
+                            />
                         </div>
                     </div>
                     
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Short Break: <input className="bg-transparent w-12" type="color" name="shortbreak-color" value={props.colorInfo.shortbreak} onChange={changeShortBreakColor}/>
+                            Short Break:
+                            <input
+                                className="bg-transparent w-12"
+                                type="color"
+                                name="shortbreak-color"
+                                value={props.colorInfo.shortbreak}
+                                onChange={changeShortBreakColor}
+                            />
                         </div>
                     </div>
 
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Long Break: <input className="bg-transparent w-12" type="color" name="longbreak-color" value={props.colorInfo.longbreak} onChange={changeLongBreakColor}/>
+                            Long Break:
+                            <input
+                                className="bg-transparent w-12"
+                                type="color"
+                                name="longbreak-color"
+                                value={props.colorInfo.longbreak}
+                                onChange={changeLongBreakColor}
+                            />
                         </div>
                     </div>
 
                     <div className="text-2xl">Other Options</div>                    
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            White Text: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.whiteText} onChange={toggleWhiteText}/>
+                            White Text:
+                            <input
+                                type="checkbox"
+                                name="longbreak-color"
+                                checked={props.checkboxSettings.whiteText}
+                                onChange={toggleWhiteText}
+                            />
                         </div>
                     </div>
 
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Auto-Select Next Task: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.autoSelectNext} onChange={toggleAutoSelectNext}/>
+                            Auto-Select Next Task:
+                            <input
+                                type="checkbox"
+                                name="longbreak-color"
+                                checked={props.checkboxSettings.autoSelectNext}
+                                onChange={toggleAutoSelectNext}
+                            />
                         </div>
                     </div>
 
                     <div>
                         <div className="flex align-center gap-2 justify-between w-full">
-                            Auto-Deselect Finished Tasks: <input type="checkbox" name="longbreak-color" checked={props.checkboxSettings.autoDeselectFinished} onChange={toggleAutoDeselectFinished}/>
+                            Auto-Deselect Finished Tasks:
+                            <input
+                                type="checkbox"
+                                name="longbreak-color"
+                                checked={props.checkboxSettings.autoDeselectFinished}
+                                onChange={toggleAutoDeselectFinished}
+                            />
                         </div>
                     </div>
 

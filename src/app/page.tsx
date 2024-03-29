@@ -39,19 +39,19 @@ export default function Home() {
     const [showSettings, setShowSettings] = useState(false);
     // State for tracking the current color of the page's background, starts at default pomodoro
     const [currentColor, setCurrentColor] = useState({ backgroundColor: colorInfo.pomodoro });
-    // State for tracking whether or not white text is enabled, starts at false
-    // const [whiteText, setWhiteText] = useState(false);
-
+    // State for tracking settings handled by checkboxes
     const [checkboxSettings, setCheckboxSettings] = useState<CheckboxSettingsInfo>({
         whiteText: false,
         autoSelectNext: false,
         autoDeselectFinished: false
     });
-
+    // State for tracking the volume of the alarm
     const [volumeSettings, setVolumeSettings] = useState<VolumeSettingsInfo>({
         alarmSound: 20
     });
 
+    // Alarm
+    // Reference for storing the alarm ring audio
     let ring = useRef<undefined | HTMLAudioElement>(undefined);
     useEffect(() => {
         ring.current = new Audio("../../../AlarmClockSound.wav");
@@ -60,6 +60,9 @@ export default function Home() {
         }
     }, []);
 
+    /**
+     * Rings the alarm by playing the ring audio.
+     */
     const ringAlarm = () => {
         if (ring.current !== undefined) {
             if (!ring.current.paused) {
@@ -69,6 +72,7 @@ export default function Home() {
         }
     }
 
+    // Sets the alarm's ringing volume
     useEffect(() => {
         if (ring.current !== undefined) {
             ring.current.volume = volumeSettings.alarmSound / 100;
