@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { clamp } from "../lib/utils";
 import clsx from "clsx";
 import { Task, TaskList } from "../lib/types";
@@ -34,6 +34,55 @@ export default function Tasklist(props: Props) {
     const [pomoLimit, setPomoLimit] = useState(1);
     // State for keeping tracking of keys assigned to tasks (incremented on new tasks)
     const [idCount, setIdCount] = useState(1);
+
+    // Stores a reference for a boolean to prevent useEffect running on site load
+    const isFirstExecution = useRef([true, true]);
+
+    // Load stored task information
+    useEffect(() => {
+        const savedTasks = localStorage.getItem('savedTasks');
+        if (savedTasks) {
+            props.setTasks(JSON.parse(savedTasks));
+        }
+
+        const lastId = localStorage.getItem('taskIdCount');
+        if (lastId) {
+            setIdCount(JSON.parse(lastId));
+        }
+
+        const lastSelectedTask = localStorage.getItem('selectedTask');
+        if (lastSelectedTask) {
+            props.setSelectedTask(JSON.parse(lastSelectedTask));
+        }
+    }, []);
+
+    // Save the current task ID count and the task list when tasks are modified
+    useEffect(() => {
+        if (isFirstExecution.current[0]) {
+            isFirstExecution.current[0] = false;
+            return;
+        }
+
+        localStorage.setItem('savedTasks', JSON.stringify(props.tasks));
+
+        // Reset the id count if there are no more tasks so the number doesn't get very large
+        if (props.tasks.length === 1) {
+            localStorage.setItem('taskIdCount', JSON.stringify(1));
+            console.log('resetting the id count');
+        } else {
+            localStorage.setItem('taskIdCount', JSON.stringify(idCount));
+        }
+    }, [props.tasks]);
+
+    // Save the currently selected task when the selected task is modified
+    useEffect(() => {
+        if (isFirstExecution.current[1]) {
+            isFirstExecution.current[1] = false;
+            return;
+        }
+
+        localStorage.setItem('selectedTask', JSON.stringify(props.selectedTask));
+    }, [props.selectedTask]);
 
     // Creates the task list for display
     const listItems = props.tasks.map((task) =>
