@@ -270,7 +270,8 @@ export default function SettingsModal(props: Props) {
                             Pomodoro:
                             <input
                                 className="bg-transparent border border-gray-400 w-12"
-                                type="number" name="pomodoro-length"
+                                type="number"
+                                name="pomodoro-length"
                                 value={props.timerInfo.pomodoro / 60}
                                 onChange={changePomodoro}
                             />
@@ -347,7 +348,7 @@ export default function SettingsModal(props: Props) {
                             White Text:
                             <input
                                 type="checkbox"
-                                name="longbreak-color"
+                                name="white-text"
                                 checked={props.checkboxSettings.whiteText}
                                 onChange={toggleWhiteText}
                             />
@@ -359,7 +360,7 @@ export default function SettingsModal(props: Props) {
                             Auto-Select Next Task:
                             <input
                                 type="checkbox"
-                                name="longbreak-color"
+                                name="auto-select-tasks"
                                 checked={props.checkboxSettings.autoSelectNext}
                                 onChange={toggleAutoSelectNext}
                             />
@@ -371,7 +372,7 @@ export default function SettingsModal(props: Props) {
                             Auto-Deselect Finished Tasks:
                             <input
                                 type="checkbox"
-                                name="longbreak-color"
+                                name="auto-deselect-tasks"
                                 checked={props.checkboxSettings.autoDeselectFinished}
                                 onChange={toggleAutoDeselectFinished}
                             />
