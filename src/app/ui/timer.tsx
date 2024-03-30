@@ -47,14 +47,8 @@ export default function Timer(props: Props) {
     }, []);
 
     // When the time elapsed changes, check whether the timer is finished and act accordingly
-    // TODO: simplify if statement in function
     useEffect(() => {
-        if (props.timeSeconds === props.timerInfo.pomodoro && props.timerType === 'pomodoro'
-        || props.timeSeconds === props.timerInfo.shortbreak && props.timerType === 'shortbreak'
-        || props.timeSeconds === props.timerInfo.longbreak && props.timerType === 'longbreak'
-        || props.timeSeconds > props.timerInfo.pomodoro && props.timerType === 'pomodoro'
-        || props.timeSeconds > props.timerInfo.shortbreak && props.timerType === 'shortbreak'
-        || props.timeSeconds > props.timerInfo.longbreak && props.timerType === 'longbreak') {
+        if (isTimerFinished()) {
             if (worker.current != undefined) {
                 worker.current.postMessage(['stoptimer']);
             }
@@ -81,6 +75,20 @@ export default function Timer(props: Props) {
         }
         
     }, [props.selectedTask, props.tasks])
+
+    /**
+     * Returns true if the timer is finished, false otherwise.
+     * @returns true if timer is finished, false otherwise
+     */
+    const isTimerFinished = () => {
+        if (props.timerType === 'pomodoro') {
+            return props.timeSeconds >= props.timerInfo.pomodoro;
+        } else if (props.timerType === 'shortbreak') {
+            return props.timeSeconds >= props.timerInfo.shortbreak;
+        } else {
+            return props.timeSeconds >= props.timerInfo.longbreak;
+        }
+    }
 
     /**
      * Returns the next TimerType after the given type.
@@ -270,7 +278,7 @@ export default function Timer(props: Props) {
             </div>
 
             <div className="cursor-pointer" onClick={resetCycleCount}>
-                {cycleCount !== 1 ? props.timerType === 'pomodoro' ? cycleCount + 'x🍅' : cycleCount - 1 + 'x🍅' : cycleCount + 'x🍅'}
+                {cycleCount !== 1 ? props.timerType === 'pomodoro' ? '🍅x' + cycleCount : '🍅x' + (cycleCount - 1) : '🍅x' + cycleCount}
             </div>
             <div className="truncate w-3/4 h-1/4 text-center">
                 {
