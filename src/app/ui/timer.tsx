@@ -2,7 +2,7 @@ import { PiArrowClockwiseBold } from "react-icons/pi";
 import { IoMdSkipForward } from "react-icons/io";
 import { secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
-import { ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from "../lib/types";
+import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from "../lib/types";
 import clsx from "clsx";
 
 interface Props {
@@ -19,6 +19,7 @@ interface Props {
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
     volumeSettings: VolumeSettingsInfo
     ringAlarm: Function
+    checkboxSettings: CheckboxSettingsInfo
 }
 
 /**
@@ -233,8 +234,9 @@ export default function Timer(props: Props) {
                 <button 
                     className={clsx(
                     {
-                        "border-b-4 border-black rounded p-2" : props.timerType === 'pomodoro',
-                        "rounded p-2" : props.timerType !== 'pomodoro'
+                        "border-b-4 border-black rounded p-2 transition-[border-color] duration-1000" : props.timerType === 'pomodoro',
+                        "rounded p-2" : props.timerType !== 'pomodoro',
+                        'border-white': props.checkboxSettings.whiteText,
                     })}
                     onClick={swapToPomodoro}
                 >
@@ -243,8 +245,9 @@ export default function Timer(props: Props) {
                 <button
                     className={clsx(
                     {
-                        "border-b-4 border-black rounded p-2" : props.timerType === 'shortbreak',
-                        "rounded p-2" : props.timerType !== 'shortbreak'
+                        "border-b-4 border-black rounded p-2 transition-[border-color] duration-1000" : props.timerType === 'shortbreak',
+                        "rounded p-2" : props.timerType !== 'shortbreak',
+                        'border-white': props.checkboxSettings.whiteText
                     })} onClick={swapToShortBreak}
                 >
                     Short Break
@@ -252,8 +255,9 @@ export default function Timer(props: Props) {
                 <button 
                     className={clsx(
                     {
-                        "border-b-4 border-black rounded p-2" : props.timerType === 'longbreak',
-                        "rounded p-2" : props.timerType !== 'longbreak'
+                        "border-b-4 border-black rounded p-2 transition-[border-color] duration-1000" : props.timerType === 'longbreak',
+                        "rounded p-2" : props.timerType !== 'longbreak',
+                        'border-white': props.checkboxSettings.whiteText
                     })} 
                     onClick={swapToLongBreak}
                 >
@@ -270,11 +274,11 @@ export default function Timer(props: Props) {
             </div>
 
             <div className="flex gap-5">
-                <button onClick={resetTimer} className="border-b-4 border-black text-4xl"><PiArrowClockwiseBold /></button>
-                <button onClick={toggleTimer} className="border-b-4 border-black rounded text-4xl p-3">
+                <button onClick={resetTimer} className={clsx({"border-b-4 border-black text-4xl transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}><PiArrowClockwiseBold /></button>
+                <button onClick={toggleTimer} className={clsx({"border-b-4 border-black rounded text-4xl p-3 transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}>
                     {timerRunning ? 'Pause' : 'Start'}
                 </button>
-                <button onClick={skipTimer} className="border-b-4 border-black text-4xl"><IoMdSkipForward /></button>
+                <button onClick={skipTimer} className={clsx({"border-b-4 border-black text-4xl transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}><IoMdSkipForward /></button>
             </div>
 
             <div className="cursor-pointer" onClick={resetCycleCount}>

@@ -44,12 +44,18 @@ export default function SettingsModal(props: Props) {
         
         const storedCheckboxSettingsInfo = localStorage.getItem('checkboxSettingsPreference');
         if (storedCheckboxSettingsInfo) {
-            props.setCheckboxSettings(JSON.parse(storedCheckboxSettingsInfo));
+            // Prevent loaded elements starting in white w/ transition
+            setTimeout(() => {
+                props.setCheckboxSettings(JSON.parse(storedCheckboxSettingsInfo));
+            }, 500);
         }
 
         const storedColorInfo = localStorage.getItem('colorPreference');
         if (storedColorInfo) {
-            props.setColorInfo(JSON.parse(storedColorInfo));
+            // Time transition with white
+            setTimeout(() => {
+                props.setColorInfo(JSON.parse(storedColorInfo));
+            }, 500);
         }
 
         const storedVolumeInfo = localStorage.getItem('volumePreference');

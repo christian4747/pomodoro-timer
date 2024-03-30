@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "../lib/utils";
 import clsx from "clsx";
-import { Task, TaskList } from "../lib/types";
+import { CheckboxSettingsInfo, Task, TaskList } from "../lib/types";
 import { MdEdit } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
 import { IoIosRemove } from "react-icons/io";
@@ -12,6 +12,7 @@ interface Props {
     setTasks: React.Dispatch<React.SetStateAction<TaskList>>
     selectedTask: number
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
+    checkboxSettings: CheckboxSettingsInfo
 }
 
 /** The lower limit of the task's current count */
@@ -68,7 +69,6 @@ export default function Tasklist(props: Props) {
         // Reset the id count if there are no more tasks so the number doesn't get very large
         if (props.tasks.length === 1) {
             localStorage.setItem('taskIdCount', JSON.stringify(1));
-            console.log('resetting the id count');
         } else {
             localStorage.setItem('taskIdCount', JSON.stringify(idCount));
         }
@@ -90,7 +90,13 @@ export default function Tasklist(props: Props) {
         if (task.id !== 0) {
             if (task.editing) {
                 return(
-                    <li className="flex gap-2 border-b-2 border-black p-3" key={task.id}>
+                    <li className={clsx(
+                            {
+                                "flex gap-2 border-b-2 border-black p-3 transition-[border-color] duration-1000" : true,
+                                "border-white" : props.checkboxSettings.whiteText
+                            }
+                        )}
+                        key={task.id}>
                         <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
                         <div className="flex gap-2 items-center justify-between">
                             <div>
@@ -101,8 +107,9 @@ export default function Tasklist(props: Props) {
                                         onChange={(e) => editTaskDescription(e, task.id)}
                                         className={clsx(
                                             {
-                                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount !== task.pomoLimit,
-                                                'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black': task.pomoCount >= task.pomoLimit
+                                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black transition-[border-color] duration-1000': task.pomoCount !== task.pomoLimit,
+                                                'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black transition-[border-color] duration-1000': task.pomoCount >= task.pomoLimit,
+                                                'border-white': props.checkboxSettings.whiteText
                                             }
                                         )}
                                     />
@@ -113,7 +120,7 @@ export default function Tasklist(props: Props) {
                             <div>
                                 <label>
                                     <input
-                                        className="w-12 bg-transparent border-b-2 border-black"
+                                        className={clsx({"w-12 bg-transparent border-b-2 border-black transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}
                                         type="number"
                                         value={task.pomoCount}
                                         onChange={(e) => editCurrentPomoCount(e, task.id)}
@@ -124,7 +131,7 @@ export default function Tasklist(props: Props) {
                             <div>
                                 <label>
                                     <input
-                                        className="w-12 bg-transparent border-b-2 border-black"
+                                        className={clsx({"w-12 bg-transparent border-b-2 border-black transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}
                                         type="number"
                                         value={task.pomoLimit}
                                         onChange={(e) => editPomoLimit(e, task.id)}
@@ -141,7 +148,7 @@ export default function Tasklist(props: Props) {
                 )
             } else {
                 return(
-                    <li className="flex gap-2 border-b-2 border-black p-3" key={task.id}>
+                    <li className={clsx({"flex gap-2 border-b-2 border-black p-3 transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})} key={task.id}>
                         <div className="flex gap-2 items-center justify-between w-full">
                             <button onClick={() => selectElement(task.id)}>{props.selectedTask === task.id ? <GrRadialSelected /> : <GrRadial />}</button>
                             <div className={clsx(
@@ -207,7 +214,14 @@ export default function Tasklist(props: Props) {
      */
     const removeElement = (key: number) => {
         const newTasks = props.tasks.filter((task) => {
-            return key !== task.id;
+            if (key !== task.id) {
+                return true;
+            } else {
+                if (props.selectedTask === key) {
+                    props.setSelectedTask(0);
+                }
+                return false;
+            }
         });
         props.setTasks(newTasks);
     }
@@ -308,7 +322,7 @@ export default function Tasklist(props: Props) {
             <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today's Tasks</div>
             <ul className="flex flex-col p-5 gap-2 overflow-scroll overflow-x-hidden">
                 {listItems}
-                <div onClick={addTask} className="flex gap-2 items-center justify-center border-2 border-black rounded-lg border-dashed p-3 cursor-pointer">
+                <div onClick={addTask} className={clsx({"flex gap-2 items-center justify-center border-2 border-black rounded-lg border-dashed p-3 cursor-pointer transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}>
                     <button>+ New Task</button>
                 </div>
             </ul>

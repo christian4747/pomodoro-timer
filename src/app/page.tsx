@@ -167,7 +167,10 @@ export default function Home() {
                     ringAlarm={ringAlarm}
                 />
 
-                <Header setShowSettings={setShowSettings}/>
+                <Header
+                    setShowSettings={setShowSettings}
+                    checkboxSettings={checkboxSettings}
+                />
                 
                 <main className="flex justify-center p-5 w-full">
                     <div className="flex flex-col">
@@ -188,6 +191,7 @@ export default function Home() {
                                 setSelectedTask={setSelectedTask}
                                 volumeSettings={volumeSettings}
                                 ringAlarm={ringAlarm}
+                                checkboxSettings={checkboxSettings}
                             />
                         </div>
 
@@ -198,6 +202,7 @@ export default function Home() {
                                 setTasks={setTasks}
                                 selectedTask={selectedTask}
                                 setSelectedTask={setSelectedTask}
+                                checkboxSettings={checkboxSettings}
                             />
                         </div>
                     </div>
