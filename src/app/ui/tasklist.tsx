@@ -69,6 +69,7 @@ export default function Tasklist(props: Props) {
         // Reset the id count if there are no more tasks so the number doesn't get very large
         if (props.tasks.length === 1) {
             localStorage.setItem('taskIdCount', JSON.stringify(1));
+            localStorage.setItem('selectedTask', JSON.stringify(0));
         } else {
             localStorage.setItem('taskIdCount', JSON.stringify(idCount));
         }
@@ -105,11 +106,12 @@ export default function Tasklist(props: Props) {
                                         type="text"
                                         value={task.taskDesc}
                                         onChange={(e) => editTaskDescription(e, task.id)}
+                                        placeholder="task description"
                                         className={clsx(
                                             {
-                                                'flex gap-2 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black transition-[border-color] duration-1000': task.pomoCount !== task.pomoLimit,
+                                                'flex gap-2 placeholder:text-black placeholder:transition placeholder:duration-1000 truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black transition-[border-color] duration-1000': task.pomoCount !== task.pomoLimit,
                                                 'flex gap-2 line-through truncate hover:text-clip hover:whitespace-normal w-full bg-transparent border-b-2 border-black transition-[border-color] duration-1000': task.pomoCount >= task.pomoLimit,
-                                                'border-white': props.checkboxSettings.whiteText
+                                                'border-white placeholder:text-white': props.checkboxSettings.whiteText
                                             }
                                         )}
                                     />

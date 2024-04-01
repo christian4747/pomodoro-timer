@@ -36,6 +36,27 @@ export default function Timer(props: Props) {
     // Reference for the worker used for background timer ticking
     let worker = useRef<undefined | Worker>(undefined);
 
+    // Stores a reference for a boolean to prevent useEffect running on site load
+    const isFirstExecution = useRef([true]);
+
+    // Set the settings based on saved preferences
+    useEffect(() => {
+        const storedCycleInfo = localStorage.getItem('cycleCount');
+        if (storedCycleInfo) {
+            setCycleCount(JSON.parse(storedCycleInfo));
+        }
+    }, []);
+
+    // Save the cycle count on change
+    useEffect(() => {
+        if (isFirstExecution.current[0]) {
+            isFirstExecution.current[0] = false;
+            return;
+        }
+
+        localStorage.setItem('cycleCount', JSON.stringify(cycleCount));
+    }, [cycleCount]);
+
     // Initializes the worker on page load
     useEffect(() => {
         worker.current = new Worker(new URL("../worker/worker.js", import.meta.url), { type: 'module' });
