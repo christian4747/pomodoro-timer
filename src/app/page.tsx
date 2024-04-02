@@ -8,6 +8,7 @@ import { secondsToTimeString } from './lib/utils';
 import SettingsModal from './ui/settingsModal';
 import Tasklist from './ui/tasklist';
 import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from './lib/types';
+import { prefix } from './lib/prefix';
 
 /**
  * The home page for the pomodoro timer.
@@ -54,7 +55,7 @@ export default function Home() {
     // Reference for storing the alarm ring audio
     let ring = useRef<undefined | HTMLAudioElement>(undefined);
     useEffect(() => {
-        ring.current = new Audio("../../../AlarmClockSound.wav");
+        ring.current = new Audio(`${prefix}/../../../AlarmClockSound.wav`);
         if (ring.current !== undefined) {
             ring.current.volume = volumeSettings.alarmSound / 100;
         }

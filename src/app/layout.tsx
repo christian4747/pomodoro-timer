@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import { prefix } from "./lib/prefix";
 
 const roboto_mono = Roboto_Mono({ weight: ["500"], subsets: ["latin"] });
 
@@ -17,10 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={roboto_mono.className}>
         <head>
-            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-            <link rel="manifest" href="/site.webmanifest" />
+            <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+            <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+            <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+            <link rel="manifest" href={`${prefix}/site.webmanifest`} />
         </head>
         {children}
     </html>
