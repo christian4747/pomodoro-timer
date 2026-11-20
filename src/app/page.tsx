@@ -52,7 +52,7 @@ export default function Home() {
 
     // Alarm
     // Reference for storing the alarm ring audio
-    let ring = useRef<undefined | HTMLAudioElement>(undefined);
+    const ring = useRef<undefined | HTMLAudioElement>(undefined);
     useEffect(() => {
         ring.current = new Audio();
         ring.current.src = `./AlarmClockSound.wav`;
@@ -83,9 +83,6 @@ export default function Home() {
     // Task states
     const [tasks, setTasks] = useState<TaskList>([{id: 0, taskDesc: '', pomoCount: 0, pomoLimit: 0, editing: false}]);
     const [selectedTask, setSelectedTask] = useState(0);
-    
-    // Reference for the interval used by the timer
-    const intervalRef = useRef<undefined | NodeJS.Timeout>(undefined);
 
     // Effect to change the color whenever the timer type changes or the color is changed in the settings
     useEffect(() => {
@@ -134,15 +131,13 @@ export default function Home() {
 
     }, [tasks]);
     
+    // Show the remaining time in the browser tab's title
+    useEffect(() => {
+        document.title = `${timerType} - ` + secondsToTimeString(timerInfo[timerType] - timeSeconds);
+    }, [timerType, timerInfo, timeSeconds]);
+
     return (
         <>
-            <title>
-                {
-                    timerType === 'pomodoro' ? `${timerType} - ` + secondsToTimeString(timerInfo.pomodoro - timeSeconds)
-                    : timerType === 'shortbreak' ? `${timerType} - ` + secondsToTimeString(timerInfo.shortbreak - timeSeconds)
-                    : `${timerType} - ` + secondsToTimeString(timerInfo.longbreak - timeSeconds)
-                }
-            </title>
             <body style={currentColor} className={clsx(
                 {
                     'bg-red-200 transition duration-1000': timerType === 'pomodoro',
@@ -180,8 +175,7 @@ export default function Home() {
                         <div className="w-[450px] flex flex-col items-center justify-center gap-2 p-2">
                             <Timer
                                 timeSeconds={timeSeconds}
-                                setTimeSeconds={setTimeSeconds}    
-                                intervalRef={intervalRef}
+                                setTimeSeconds={setTimeSeconds}
                                 timerType={timerType}
                                 setTimerType={setTimerType}
                                 timerInfo={timerInfo}

@@ -1,6 +1,6 @@
 import { PiArrowClockwiseBold } from "react-icons/pi";
 import { IoMdSkipForward } from "react-icons/io";
-import { secondsToTimeString } from "../lib/utils";
+import { loadFromStorage, secondsToTimeString } from "../lib/utils";
 import { useState, useEffect, useRef } from 'react';
 import { CheckboxSettingsInfo, ColorInformation, TaskList, TimerInformation, TimerType, VolumeSettingsInfo } from "../lib/types";
 import clsx from "clsx";
@@ -8,7 +8,6 @@ import clsx from "clsx";
 interface Props {
     timeSeconds: number
     setTimeSeconds: React.Dispatch<React.SetStateAction<number>>
-    intervalRef: React.MutableRefObject<undefined | NodeJS.Timeout>
     timerType: TimerType
     setTimerType: React.Dispatch<React.SetStateAction<TimerType>>
     timerInfo: TimerInformation
@@ -18,7 +17,7 @@ interface Props {
     selectedTask: number
     setSelectedTask: React.Dispatch<React.SetStateAction<number>>
     volumeSettings: VolumeSettingsInfo
-    ringAlarm: Function
+    ringAlarm: () => void
     checkboxSettings: CheckboxSettingsInfo
 }
 
@@ -34,16 +33,18 @@ export default function Timer(props: Props) {
     // State tracking the description of the current task
     const [taskDesc, setTaskDesc] = useState('');
     // Reference for the worker used for background timer ticking
-    let worker = useRef<undefined | Worker>(undefined);
+    const worker = useRef<undefined | Worker>(undefined);
+    // Reference for the fallback interval used when the worker is unavailable
+    const intervalRef = useRef<undefined | ReturnType<typeof setInterval>>(undefined);
 
     // Stores a reference for a boolean to prevent useEffect running on site load
     const isFirstExecution = useRef([true]);
 
     // Set the settings based on saved preferences
     useEffect(() => {
-        const storedCycleInfo = localStorage.getItem('cycleCount');
-        if (storedCycleInfo) {
-            setCycleCount(JSON.parse(storedCycleInfo));
+        const storedCycleInfo = loadFromStorage<number>('cycleCount');
+        if (storedCycleInfo !== null) {
+            setCycleCount(storedCycleInfo);
         }
     }, []);
 
@@ -67,22 +68,6 @@ export default function Timer(props: Props) {
             }
         }
     }, []);
-
-    // When the time elapsed changes, check whether the timer is finished and act accordingly
-    useEffect(() => {
-        if (isTimerFinished()) {
-            if (worker.current != undefined) {
-                worker.current.postMessage(['stoptimer']);
-            }
-
-            props.ringAlarm();
-
-            clearInterval(props.intervalRef.current);
-            props.intervalRef.current = undefined;
-            setTimerRunning(false);
-            configureTimer();
-        }
-    }, [props.timeSeconds]);
 
     // Handles changing the current task name under the number of cycles.
     useEffect(() => {
@@ -131,7 +116,7 @@ export default function Timer(props: Props) {
      */
     const configureTimer = () => {
         // Get the next type, reset the timer, set to the next type
-        let next: TimerType = rotateType(props.timerType);
+        const next: TimerType = rotateType(props.timerType);
         props.setTimeSeconds(0);
         props.setTimerType(next);
 
@@ -164,8 +149,8 @@ export default function Timer(props: Props) {
             worker.current.postMessage(['stoptimer']);
         }
         props.setTimeSeconds(0);
-        clearInterval(props.intervalRef.current);
-        props.intervalRef.current = undefined;
+        clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
         setTimerRunning(false);
     }
 
@@ -183,11 +168,11 @@ export default function Timer(props: Props) {
                 worker.current.postMessage(['stoptimer']);
             }
         } else {
-            if (props.intervalRef.current != null) {
-                clearInterval(props.intervalRef.current);
-                props.intervalRef.current = undefined;
+            if (intervalRef.current != null) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = undefined;
             } else {
-                props.intervalRef.current = setInterval(() => {
+                intervalRef.current = setInterval(() => {
                     props.setTimeSeconds(prevState => prevState + 1);
                 }, 1000);
             }
@@ -248,6 +233,22 @@ export default function Timer(props: Props) {
         }
         setCycleCount(1);
     }
+
+    // When the time elapsed changes, check whether the timer is finished and act accordingly
+    useEffect(() => {
+        if (isTimerFinished()) {
+            if (worker.current != undefined) {
+                worker.current.postMessage(['stoptimer']);
+            }
+
+            props.ringAlarm();
+
+            clearInterval(intervalRef.current);
+            intervalRef.current = undefined;
+            setTimerRunning(false);
+            configureTimer();
+        }
+    }, [props.timeSeconds]);
 
     return (
         <>

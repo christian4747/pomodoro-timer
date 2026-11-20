@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { clamp } from "../lib/utils";
+import { clamp, loadFromStorage } from "../lib/utils";
 import { CheckboxSettingsInfo, ColorInformation, TimerInformation, VolumeSettingsInfo } from "../lib/types";
 import { useEffect, useRef } from "react";
 
@@ -37,30 +37,30 @@ export default function SettingsModal(props: Props) {
 
     // Set the settings based on saved preferences
     useEffect(() => {
-        const storedTimerInfo = localStorage.getItem('timerPreference');
+        const storedTimerInfo = loadFromStorage<TimerInformation>('timerPreference');
         if (storedTimerInfo) {
-            props.setTimerInfo(JSON.parse(storedTimerInfo));
+            props.setTimerInfo(storedTimerInfo);
         }
-        
-        const storedCheckboxSettingsInfo = localStorage.getItem('checkboxSettingsPreference');
+
+        const storedCheckboxSettingsInfo = loadFromStorage<CheckboxSettingsInfo>('checkboxSettingsPreference');
         if (storedCheckboxSettingsInfo) {
             // Prevent loaded elements starting in white w/ transition
             setTimeout(() => {
-                props.setCheckboxSettings(JSON.parse(storedCheckboxSettingsInfo));
+                props.setCheckboxSettings(storedCheckboxSettingsInfo);
             }, 500);
         }
 
-        const storedColorInfo = localStorage.getItem('colorPreference');
+        const storedColorInfo = loadFromStorage<ColorInformation>('colorPreference');
         if (storedColorInfo) {
             // Time transition with white
             setTimeout(() => {
-                props.setColorInfo(JSON.parse(storedColorInfo));
+                props.setColorInfo(storedColorInfo);
             }, 500);
         }
 
-        const storedVolumeInfo = localStorage.getItem('volumePreference');
+        const storedVolumeInfo = loadFromStorage<VolumeSettingsInfo>('volumePreference');
         if (storedVolumeInfo) {
-            props.setVolumeSettings(JSON.parse(storedVolumeInfo));
+            props.setVolumeSettings(storedVolumeInfo);
         }
     }, []);
 

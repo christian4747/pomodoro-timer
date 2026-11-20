@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { clamp } from "../lib/utils";
+import { clamp, loadFromStorage } from "../lib/utils";
 import clsx from "clsx";
 import { CheckboxSettingsInfo, Task, TaskList } from "../lib/types";
 import { MdEdit } from "react-icons/md";
@@ -27,12 +27,6 @@ const max = 999;
  */
 export default function Tasklist(props: Props) {
 
-    // State for keeping track of the description input for adding a new task
-    const [newTask, setNewTask] = useState('');
-    // State for keeping track of the current pomodoro count for a task
-    const [pomoCount, setPomoCount] = useState(0);
-    // State for keeping track of the upper pomodoro limit for a task
-    const [pomoLimit, setPomoLimit] = useState(1);
     // State for keeping tracking of keys assigned to tasks (incremented on new tasks)
     const [idCount, setIdCount] = useState(1);
 
@@ -41,19 +35,19 @@ export default function Tasklist(props: Props) {
 
     // Load stored task information
     useEffect(() => {
-        const savedTasks = localStorage.getItem('savedTasks');
-        if (savedTasks) {
-            props.setTasks(JSON.parse(savedTasks));
+        const savedTasks = loadFromStorage<TaskList>('savedTasks');
+        if (Array.isArray(savedTasks)) {
+            props.setTasks(savedTasks);
         }
 
-        const lastId = localStorage.getItem('taskIdCount');
-        if (lastId) {
-            setIdCount(JSON.parse(lastId));
+        const lastId = loadFromStorage<number>('taskIdCount');
+        if (lastId !== null) {
+            setIdCount(lastId);
         }
 
-        const lastSelectedTask = localStorage.getItem('selectedTask');
-        if (lastSelectedTask) {
-            props.setSelectedTask(JSON.parse(lastSelectedTask));
+        const lastSelectedTask = loadFromStorage<number>('selectedTask');
+        if (lastSelectedTask !== null) {
+            props.setSelectedTask(lastSelectedTask);
         }
     }, []);
 
@@ -181,33 +175,7 @@ export default function Tasklist(props: Props) {
      */
     const addTask = () => {
         setIdCount(prevState => prevState + 1);
-        props.setTasks(prevState => [...props.tasks, {id: idCount, taskDesc: '', pomoCount: 0, pomoLimit: 1, editing: true}]);
-        setNewTask('');
-        setPomoLimit(1);
-    }
-
-    /**
-     * Changes the state of the text currently in the description input box.
-     * @param e event triggered by typing in the input box
-     */
-    const changeNewTask = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTask(prevState => e.target.value);
-    }
-
-    /**
-     * Changes the state of the number currently in the pomodoro count input box.
-     * @param e event triggered by typing in the input box
-     */
-    const changePomoCount = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPomoCount(prevState => clamp(parseInt(e.target.value), countMin, max));
-    }
-
-    /**
-     * Changes the state of the number currently in the limit input box.
-     * @param e event triggered by typing in the input box
-     */
-    const changePomoLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPomoLimit(prevState => clamp(parseInt(e.target.value), limitMin, max));
+        props.setTasks(prevState => [...prevState, {id: idCount, taskDesc: '', pomoCount: 0, pomoLimit: 1, editing: true}]);
     }
 
     /**
@@ -321,7 +289,7 @@ export default function Tasklist(props: Props) {
 
     return (
         <div className="flex flex-col">
-            <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today's Tasks</div>
+            <div className="text-3xl text-center bg-transparent underline underline-offset-8">Today&apos;s Tasks</div>
             <ul className="flex flex-col p-5 gap-2 overflow-scroll overflow-x-hidden">
                 {listItems}
                 <div onClick={addTask} className={clsx({"flex gap-2 items-center justify-center border-2 border-black rounded-lg border-dashed p-3 cursor-pointer transition-[border-color] duration-1000" : true, 'border-white': props.checkboxSettings.whiteText})}>
