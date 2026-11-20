@@ -23,3 +23,19 @@ export const secondsToTimeString = (seconds: number) => {
 export const clamp = (num: number, min: number, max: number) => {
     return num > min ? num < max ? num : max : min;
 }
+
+/**
+ * Reads and parses a JSON value saved in localStorage.
+ * Returns null if nothing is stored, the stored value is not valid JSON, or storage is unavailable,
+ * so corrupted saved data can't crash the page on load.
+ * @param key the localStorage key to read
+ * @returns the parsed value, or null
+ */
+export const loadFromStorage = <T,>(key: string): T | null => {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored === null ? null : JSON.parse(stored) as T;
+    } catch {
+        return null;
+    }
+}
